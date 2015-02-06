@@ -1,0 +1,17 @@
+<%= javascript_tag do %>
+  var wl = window.location
+    , url
+    , port;
+
+  if(wl.hash.length > 0) {
+    if(wl.port == 80 || wl.port == 443) {
+      port = null;
+    } else {
+      port = ':' + wl.port;
+    }
+
+    url = wl.protocol + '//' + wl.hostname  + port + wl.pathname + '?' + wl.hash.substring(1);
+    wl.replace(url);
+    document.write('<p>Click <a href="' + url + '">here</a> if the login does not redirect you.</p>');
+  }
+<% end %>

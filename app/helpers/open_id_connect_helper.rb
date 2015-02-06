@@ -1,0 +1,2 @@
+module OpenIdConnectHelper
+end

@@ -1,0 +1,21 @@
+<h3><%= t('config.header') %></h3>
+
+<p>
+  <label><%= t('config.enabled') %></label>
+  <%= check_box_tag "settings[enabled]", 1, @settings[:enabled] %>
+</p>
+
+<p>
+  <label><%= t('config.client_id') %></label>
+  <%= text_field_tag "settings[client_id]", @settings[:client_id] %>
+</p>
+
+<p>
+  <label><%= t('config.openid_connect_server_url') %></label>
+  <%= text_field_tag "settings[openid_connect_server_url]", @settings[:openid_connect_server_url] %>
+</p>
+
+<p>
+  <label><%= t('config.client_secret') %></label>
+  <%= text_field_tag "settings[client_secret]", @settings['client_secret'] %>
+</p>
