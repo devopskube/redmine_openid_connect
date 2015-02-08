@@ -1,5 +1,0 @@
-= Redmine OpenId Connect Plugin
-
-<em>Note that this is, at the moment, a proof of concept. Further modification is needed for use of public.</em>
-
-== Usage
