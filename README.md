@@ -3,7 +3,7 @@
 **Note** *This plugin is at the moment, a proof of concept (POC). Further coding needs to be added to ensure security.*
 
 ## Introduction ##
-This is a plugin based on the implementation of redmine_cas. It redirects to a SSO server bypassing the original Redmin login authentication.
+This is a plugin based on the implementation of redmine_cas. It redirects to a SSO server bypassing the original Redmine login authentication and using the SSO server authentication in it's place.
 
 ## Usage ##
 1. Go to your Redmine plugins directory.
