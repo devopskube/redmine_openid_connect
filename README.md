@@ -8,11 +8,12 @@ This is a plugin based on the implementation of redmine_cas. It redirects to a S
 ## Usage ##
 1. Go to your Redmine plugins directory.
 2. Clone/copy this plugin.
-3. Restart your server
-4. Login as administrator and head over to the plugins page.
-5. Open the configuration page for redmine openid connect plugin.
-6. Fill in the details.
-7. Go to your SSO server and add this url as a registered login url and logout url respectively:
+3. Run bundle install
+4. Restart your server
+5. Login as administrator and head over to the plugins page.
+6. Open the configuration page for redmine openid connect plugin.
+7. Fill in the details.
+8. Go to your SSO server and add this url as a registered login url and logout url respectively:
 
 ```
 http(or s)://your-host-url/has_authorization
