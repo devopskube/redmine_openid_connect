@@ -12,7 +12,6 @@ This
 4. Login as administrator and head over to the plugins page.
 5. Fill in the details.
 6. Go to your SSO server and add this url as a registered login url:
-
 ```
 http(or s)://your-host-url/has_authorization
 ```
