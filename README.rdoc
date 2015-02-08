@@ -1,3 +1,5 @@
-= redmine_openid_connect
+= Redmine OpenId Connect Plugin
 
-Description goes here
+<em>Note that this is, at the moment, a proof of concept. Further modification is needed for use of public.</em>
+
+== Usage
