@@ -19,40 +19,42 @@ module OpenidConnect
       redirect_to OpenidConnect.logout_session_uri
     end
 
-    def create_or_login_the_account
-      data = OpenidConnect.get_user_info
+    def oic
+      if params[:id_token]
+        OpenidConnect.store_auth_values(params)
 
-      # Check if there's already an existing user
-      user = User.find_by_login(data[:user_name])
+        data = OpenidConnect.get_user_info
 
-      if user.nil?
-        user = User.new
+        # Check if there's already an existing user
+        user = User.find_by_login(data[:user_name])
 
-        user.login = data[:user_name]
+        if user.nil?
+          user = User.new
 
-        user.assign_attributes({
-          agency_id: Agency.first.id,
-          firstname: data[:given_name],
-          lastname: data[:family_name],
-          mail: data[:email],
-          mail_notification: 'only_my_events',
-          last_login_on: Time.now
-        })
+          user.login = data[:user_name]
 
-        if user.save
+          user.assign_attributes({
+            agency_id: Agency.first.id,
+            firstname: data[:given_name],
+            lastname: data[:family_name],
+            mail: data[:email],
+            mail_notification: 'only_my_events',
+            last_login_on: Time.now
+          })
+
+          if user.save
+            self.logged_user = user
+
+            successful_authentication(user)
+          else
+            # Add error handling here
+          end
+        else
           self.logged_user = user
 
           successful_authentication(user)
-        else
-          # Add error handling here
-        end
-      else
-        self.logged_user = user
-
-        successful_authentication(user)
-      end # if user.nil?
+        end # if user.nil?
+      end
     end
-
-    false
   end # InstanceMethods
 end
