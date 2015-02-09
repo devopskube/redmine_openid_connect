@@ -26,6 +26,8 @@ module OpenidConnect
     @scope = data[:scope]
     @code = data[:code]
     @id_token = data[:id_token]
+
+    get_authorization_token
   end
 
   def get_authorization_token
@@ -36,7 +38,6 @@ module OpenidConnect
       uri,
       body: authorization_token_query_string
     ).with_indifferent_access
-
 
     @access_token = response[:access_token]
     @token_type = response[:token_type]
@@ -105,7 +106,7 @@ module OpenidConnect
   end
 
   def redirect_uri
-    "#{ host_name }/has_authorization"
+    "#{ host_name }/oic"
   end
 
   def authorize_query_string

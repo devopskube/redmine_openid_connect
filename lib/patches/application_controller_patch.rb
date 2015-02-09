@@ -4,7 +4,6 @@ module OpenidConnect
       base.send(:include, InstanceMethods)
 
       base.class_eval do
-        skip_before_filter :check_if_login_required, only: [:has_authorization, :has_authorization_token]
         alias_method_chain :require_login, :openid_connect
       end
     end
