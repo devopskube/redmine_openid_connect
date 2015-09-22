@@ -26,18 +26,18 @@ module OpenidConnect
         data = OpenidConnect.get_user_info
 
         # Check if there's already an existing user
-        user = User.find_by_login(data[:user_name])
+        user = User.find_by_login(data["email"])
 
         if user.nil?
           user = User.new
 
-          user.login = data[:user_name]
+          user.login = data["user_name"]
 
           user.assign_attributes({
             agency_id: Agency.first.id,
-            firstname: data[:given_name],
-            lastname: data[:family_name],
-            mail: data[:email],
+            firstname: data["given_name"],
+            lastname: data["family_name"],
+            mail: data["email"],
             mail_notification: 'only_my_events',
             last_login_on: Time.now
           })
