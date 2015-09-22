@@ -24,38 +24,38 @@ module OpenidConnect
   end
 
   def store_auth_values(data)
-    @session_id = data[:session_id]
-    @scope = data[:scope]
-    @code = data[:code]
-    @id_token = data[:id_token]
+    @session_id = data["session_id"]
+    @scope = data["scope"]
+    @code = data["code"]
+    @id_token = data["id_token"]
 
     get_authorization_token
   end
 
   def get_authorization_token
-    host = openid_config(:token_endpoint)
+    host = openid_config("token_endpoint")
     uri = URI(host)
 
     response = HTTParty.post(
       uri,
       body: authorization_token_query_string
-    ).with_indifferent_access
+    )
 
-    @access_token = response[:access_token]
-    @token_type = response[:token_type]
-    @expires_in = response[:expires_in]
-    @refresh_token = response[:refresh_token]
+    @access_token = response["access_token"]
+    @token_type = response["token_type"]
+    @expires_in = response["expires_in"]
+    @refresh_token = response["refresh_token"]
   end
 
   def get_user_info
-    host = openid_config(:userinfo_endpoint)
+    host = openid_config("userinfo_endpoint")
     uri = URI(host)
 
     HTTParty.post(uri, body: { access_token: access_token })
   end
 
   def logout_session_uri
-    openid_config(:end_session_endpoint) + logout_session_query_string
+    openid_config("end_session_endpoint") + logout_session_query_string
   end
 
   private
@@ -100,7 +100,7 @@ module OpenidConnect
   end
 
   def authorization_endpoint
-    @current_configuration[:authorization_endpoint]
+    @current_configuration["authorization_endpoint"]
   end
 
   def host_name
