@@ -112,8 +112,14 @@ module OpenidConnect
   end
 
   def authorize_query_string
+    openid_state = SecureRandom.uuid
+    openid_nonce = SecureRandom.uuid
+    session[:openid_state] = openid_state
+    session[:openid_nonce] = openid_nonce
     query_string = ['response_type=code+id_token',
-                    'scope=openid+profile+email',
+                    "state=#{openid_state}",
+                    "nonce=#{openid_nonce}",
+                    'scope=openid+profile+email+user_name',
                     "redirect_uri=#{ redirect_uri }",
                     "client_id=#{ setting(:client_id) }"]
 
