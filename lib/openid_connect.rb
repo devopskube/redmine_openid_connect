@@ -20,7 +20,7 @@ module OpenidConnect
 
     uri = URI(host + configuration)
 
-    @current_configuration ||= HTTParty.get(uri).with_indifferent_access
+    @current_configuration ||= HTTParty.get(uri)
   end
 
   def store_auth_values(data)
@@ -51,7 +51,7 @@ module OpenidConnect
     host = openid_config(:userinfo_endpoint)
     uri = URI(host)
 
-    HTTParty.post(uri, body: { access_token: access_token }).with_indifferent_access
+    HTTParty.post(uri, body: { access_token: access_token })
   end
 
   def logout_session_uri
