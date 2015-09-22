@@ -134,7 +134,7 @@ module OpenidConnect
   def logout_session_query_string
     query_string = [
       "id_token_hint=#{ id_token }",
-      "sesion_id=#{ session_id }",
+      "session_id=#{ session_id }",
       "post_logout_redirect_uri=#{ host_name }"
     ]
 
