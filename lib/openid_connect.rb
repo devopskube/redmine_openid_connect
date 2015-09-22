@@ -13,7 +13,9 @@ module OpenidConnect
   end
 
   def get_current_configuration
+    return nil unless enabled?
     host = setting(:openid_connect_server_url)
+    return nil unless host
     configuration = '/.well-known/openid-configuration'
 
     uri = URI(host + configuration)
