@@ -104,7 +104,12 @@ module OpenidConnect
   end
 
   def host_name
-    Setting.find_by_name('host_name').value
+    s = Setting.find_by_name('host_name')
+    if s
+      s.value
+    else
+      ""
+    end
   end
 
   def redirect_uri
