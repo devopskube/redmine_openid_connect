@@ -6,3 +6,4 @@ en:
     client_id: Client ID
     openid_connect_server_url: OpenID Connect server url
     client_secret: Client Secret
+    group: OpenID Connect Group

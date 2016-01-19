@@ -6,6 +6,7 @@ module OpenidConnect
       base.class_eval do
         # Add before filters and stuff here
         alias_method_chain :logout, :openid_connect
+        alias_method_chain :invalid_credentials, :openid_connect
       end
     end
   end # AccountControllerPatch
@@ -24,6 +25,9 @@ module OpenidConnect
         OpenidConnect.store_auth_values(params)
 
         data = OpenidConnect.get_user_info
+        unless OpenidConnect.is_authorized? data
+          return invalid_credentials
+        end
 
         # Check if there's already an existing user
         user = User.find_by_mail(data["email"])
@@ -54,6 +58,12 @@ module OpenidConnect
           successful_authentication(user)
         end # if user.nil?
       end
+    end
+
+    def invalid_credentials_with_openid_connect
+      return invalid_credentials_without_openid_connect unless OpenidConnect.enabled?
+      logger.warn "Failed login for '#{params[:username]}' from #{request.remote_ip} at #{Time.now.utc}"
+      flash.now[:error] = l(:notice_account_invalid_creditentials) + ". " + "<a href='#{signout_path}'>Try a different account</a>"
     end
   end # InstanceMethods
 end

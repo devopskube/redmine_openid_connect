@@ -54,6 +54,14 @@ module OpenidConnect
     HTTParty.post(uri, body: { access_token: access_token })
   end
 
+  def is_authorized?(user)
+    unless setting(:group).blank?
+      # only run authorized code if group is specified
+      return user["member_of"].present? && user["member_of"].include?(setting(:group))
+    end
+    return true
+  end
+
   def logout_session_uri
     openid_config("end_session_endpoint") + logout_session_query_string
   end

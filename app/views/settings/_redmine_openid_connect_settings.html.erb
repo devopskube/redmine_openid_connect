@@ -19,3 +19,8 @@
   <label><%= t('config.client_secret') %></label>
   <%= password_field_tag "settings[client_secret]", @settings['client_secret'] %>
 </p>
+
+<p>
+  <label><%= t('config.group') %></label>
+  <%= text_field_tag "settings[group]", @settings[:group] %>
+</p>
