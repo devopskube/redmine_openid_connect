@@ -34,7 +34,6 @@ module OpenidConnect
           user.login = data["user_name"]
 
           user.assign_attributes({
-            agency_id: Agency.first.id,
             firstname: data["given_name"],
             lastname: data["family_name"],
             mail: data["email"],
