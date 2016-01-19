@@ -26,7 +26,7 @@ module OpenidConnect
         data = OpenidConnect.get_user_info
 
         # Check if there's already an existing user
-        user = User.where(:mail => data["email"]).first
+        user = User.find_by_mail(data["email"])
 
         if user.nil?
           user = User.new
