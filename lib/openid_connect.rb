@@ -38,7 +38,8 @@ module OpenidConnect
 
     response = HTTParty.post(
       uri,
-      body: authorization_token_query_string
+      body: authorization_token_query_string,
+      basic_auth: {username: setting(:client_id), password: setting(:client_secret) },
     )
 
     @access_token = response["access_token"]
@@ -144,7 +145,6 @@ module OpenidConnect
       'scope' => scope,
       'id_token' => id_token,
       'redirect_uri' => redirect_uri,
-      'client_id' => setting(:client_id),
     }
   end
 
