@@ -23,24 +23,35 @@ module OpenidConnect
     def oic
       if params[:code]
         OpenidConnect.store_auth_values(params)
+        raw_id_token = OpenidConnect.get_user_info
 
-        data = OpenidConnect.get_user_info
-        unless OpenidConnect.is_authorized? data
+        # decode id_token from userinfo endpoint
+        # since it's https, there's no need to verify
+	parsed_id_token = JSON::parse(Base64::decode64(raw_id_token.split('.')[1]))
+
+        # store openid session in client session
+        oic_session = {}
+        oic_session['session_id'] = params[:session_id]
+        oic_session['id_token'] = raw_id_token
+        oic_session['session_state'] = params['session_state']
+        session['oic_session'] = oic_session
+
+        unless OpenidConnect.is_authorized? parsed_id_token
           return invalid_credentials
         end
 
         # Check if there's already an existing user
-        user = User.find_by_mail(data["email"])
+        user = User.find_by_mail(parsed_id_token["email"])
 
         if user.nil?
           user = User.new
 
-          user.login = data["user_name"]
+          user.login = parsed_id_token["user_name"]
 
           user.assign_attributes({
-            firstname: data["given_name"],
-            lastname: data["family_name"],
-            mail: data["email"],
+            firstname: parsed_id_token["given_name"],
+            lastname: parsed_id_token["family_name"],
+            mail: parsed_id_token["email"],
             mail_notification: 'only_my_events',
             last_login_on: Time.now
           })
