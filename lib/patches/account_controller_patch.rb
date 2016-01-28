@@ -21,7 +21,7 @@ module OpenidConnect
     end
 
     def oic
-      if params[:id_token]
+      if params[:code]
         OpenidConnect.store_auth_values(params)
 
         data = OpenidConnect.get_user_info
