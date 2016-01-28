@@ -28,6 +28,7 @@ module OpenidConnect
     @scope = data["scope"]
     @code = data["code"]
     @id_token = data["id_token"]
+    @session_state = data["session_state"]
 
     get_authorization_token
   end
@@ -94,6 +95,10 @@ module OpenidConnect
 
   def session_id
     @session_id
+  end
+
+  def session_state
+    @session_state
   end
 
   def scope
