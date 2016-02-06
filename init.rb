@@ -2,6 +2,8 @@ require 'redmine'
 require 'patches/application_controller_patch'
 require 'patches/account_controller_patch'
 
+require_dependency 'redmine_openid_connect/hooks'
+
 Redmine::Plugin.register :redmine_openid_connect do
   name 'Redmine Openid Connect plugin'
   author 'Alfonso Juan Dillera'

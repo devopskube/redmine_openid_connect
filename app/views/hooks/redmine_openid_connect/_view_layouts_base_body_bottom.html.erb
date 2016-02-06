@@ -1,0 +1,16 @@
+<iframe id="rpiframe" src="<%= rpiframe_url %>" style="display:none" onload="checkSessionPoll('rpiframe')"></iframe>
+<iframe id="opiframe" src="<%= oic_session.dynamic_configuration['check_session_iframe'] %>" style="display:none" onload="checkSessionPoll('opiframe')"></iframe>
+<script type="text/javascript">
+checkSessionPoll = (function () {
+  var rpiframe_loaded = false;
+  var opiframe_loaded = false;
+  return function(frame) {
+    if (frame == 'rpiframe') rpiframe_loaded = true;
+    if (frame == 'opiframe') opiframe_loaded = true;
+    if (rpiframe_loaded && opiframe_loaded) {
+      var rpiframe = document.getElementById('rpiframe').contentWindow;
+      poll = setInterval(rpiframe.checkSession, rpiframe.check_interval);
+    }
+  };
+})();
+</script>

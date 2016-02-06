@@ -95,5 +95,10 @@ module OpenidConnect
       logger.warn "Failed login for '#{params[:username]}' from #{request.remote_ip} at #{Time.now.utc}"
       flash.now[:error] = l(:notice_account_invalid_creditentials) + ". " + "<a href='#{signout_path}'>Try a different account</a>"
     end
+
+    def rpiframe
+      @oic_session = OicSession.find(session[:oic_session_id])
+      render layout: false
+    end
   end # InstanceMethods
 end
