@@ -13,66 +13,73 @@ module OpenidConnect
 
   module InstanceMethods
     def logout_with_openid_connect
-      return logout_without_openid_connect unless OpenidConnect.enabled?
+      return logout_without_openid_connect unless OicSession.plugin_config[:enabled]
 
+      oic_session = OicSession.find(session[:oic_session_id])
+      oic_session.destroy
       logout_user
+      reset_session
+      redirect_to oic_session.end_session_url
 
-      redirect_to OpenidConnect.logout_session_uri
     end
 
     def oic
       if params[:code]
-        OpenidConnect.store_auth_values(params)
-        raw_id_token = OpenidConnect.get_user_info
+        oic_session = OicSession.find(session[:oic_session_id])
 
-        # decode id_token from userinfo endpoint
-        # since it's https, there's no need to verify
-	parsed_id_token = JSON::parse(Base64::decode64(raw_id_token.split('.')[1]))
+        unless oic_session.present?
+          return invalid_credentials
+        end
 
-        # store openid session in client session
-        oic_session = {}
-        oic_session['session_id'] = params[:session_id]
-        oic_session['id_token'] = raw_id_token
-        oic_session['session_state'] = params['session_state']
-        session['oic_session'] = oic_session
+        oic_session.update_attributes!(params.permit(
+          :code,
+          :id_token,
+          :session_state,
+        ))
 
-        unless OpenidConnect.is_authorized? parsed_id_token
+
+        # get access token and user info
+        oic_session.get_access_token!
+        user_info = oic_session.get_user_info!
+
+        # verify application authorization
+        unless oic_session.is_authorized?
           return invalid_credentials
         end
 
         # Check if there's already an existing user
-        user = User.find_by_mail(parsed_id_token["email"])
+        user = User.find_by_mail(user_info["email"])
 
         if user.nil?
           user = User.new
 
-          user.login = parsed_id_token["user_name"]
+          user.login = user_info["user_name"]
 
           user.assign_attributes({
-            firstname: parsed_id_token["given_name"],
-            lastname: parsed_id_token["family_name"],
-            mail: parsed_id_token["email"],
+            firstname: user_info["given_name"],
+            lastname: user_info["family_name"],
+            mail: user_info["email"],
             mail_notification: 'only_my_events',
             last_login_on: Time.now
           })
 
           if user.save
-            self.logged_user = user
-
+            oic_session.user_id = user.id
+            oic_session.save!
             successful_authentication(user)
           else
             # Add error handling here
           end
         else
-          self.logged_user = user
-
+          oic_session.user_id = user.id
+          oic_session.save!
           successful_authentication(user)
         end # if user.nil?
       end
     end
 
     def invalid_credentials_with_openid_connect
-      return invalid_credentials_without_openid_connect unless OpenidConnect.enabled?
+      return invalid_credentials_without_openid_connect unless OicSession.plugin_config[:enabled]
       logger.warn "Failed login for '#{params[:username]}' from #{request.remote_ip} at #{Time.now.utc}"
       flash.now[:error] = l(:notice_account_invalid_creditentials) + ". " + "<a href='#{signout_path}'>Try a different account</a>"
     end
