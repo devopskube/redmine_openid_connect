@@ -47,6 +47,8 @@ module OpenidConnect
           :session_state,
         ))
 
+        # verify id token nonce or reauthorize
+        return oic_reauthorize unless oic_session.nonce == oic_session.claims['nonce']
 
         # get access token and user info
         oic_session.get_access_token!
