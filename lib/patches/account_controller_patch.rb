@@ -20,7 +20,14 @@ module OpenidConnect
       logout_user
       reset_session
       redirect_to oic_session.end_session_url
+    end
 
+    def oic_reauthorize
+      oic_session = OicSession.find(session[:oic_session_id])
+      oic_session.destroy
+      logout_user
+      reset_session
+      require_login
     end
 
     def oic
