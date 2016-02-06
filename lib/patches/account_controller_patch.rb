@@ -38,6 +38,9 @@ module OpenidConnect
           return invalid_credentials
         end
 
+        # verify request state or reauthorize
+        return oic_reauthorize unless oic_session.state == params[:state]
+
         oic_session.update_attributes!(params.permit(
           :code,
           :id_token,
