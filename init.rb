@@ -1,5 +1,4 @@
 require 'redmine'
-require 'openid_connect'
 require 'patches/application_controller_patch'
 require 'patches/account_controller_patch'
 
@@ -17,8 +16,4 @@ end
 Rails.configuration.to_prepare do
   ApplicationController.send(:include, OpenidConnect::ApplicationControllerPatch)
   AccountController.send(:include, OpenidConnect::AccountControllerPatch)
-end
-
-ActionDispatch::Callbacks.before do
-  OpenidConnect.get_current_configuration
 end
