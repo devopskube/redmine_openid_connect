@@ -6,12 +6,14 @@ class CreateOicSessions < ActiveRecord::Migration
       t.string :state
       t.string :nonce
       t.string :session_state
-      t.text :id_token, index: true
+      t.text :id_token
       t.string :access_token, index: true
       t.string :refresh_token, index: true
       t.datetime :expires_at
       t.timestamps
     end
+
+    add_index :oic_sessions, :id_token, length: 64
   end
   def self.down
     drop_table :oic_sessions
