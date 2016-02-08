@@ -41,11 +41,7 @@ module OpenidConnect
         # verify request state or reauthorize
         return oic_reauthorize unless oic_session.state == params[:state]
 
-        oic_session.update_attributes!(params.permit(
-          :code,
-          :id_token,
-          :session_state,
-        ))
+        oic_session.update_attributes!(authorize_params)
 
         # verify id token nonce or reauthorize
         return oic_reauthorize unless oic_session.nonce == oic_session.claims['nonce']
@@ -99,6 +95,25 @@ module OpenidConnect
     def rpiframe
       @oic_session = OicSession.find(session[:oic_session_id])
       render layout: false
+    end
+
+    def authorize_params
+      # compatible with both rails 3 and 4
+      if params.respond_to?(:permit)
+        params.permit(
+          :code,
+          :id_token,
+          :session_state,
+        )
+      else
+        params.select do |k,v|
+          [
+            'code',
+            'id_token',
+            'session_state',
+          ].include?(k)
+        end
+      end
     end
   end # InstanceMethods
 end
