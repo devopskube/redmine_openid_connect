@@ -1,4 +1,4 @@
-module OpenidConnect
+module RedmineOpenidConnect
   module AccountControllerPatch
     def self.included(base)
       base.send(:include, InstanceMethods)

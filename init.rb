@@ -16,6 +16,6 @@ Redmine::Plugin.register :redmine_openid_connect do
 end
 
 Rails.configuration.to_prepare do
-  ApplicationController.send(:include, OpenidConnect::ApplicationControllerPatch)
-  AccountController.send(:include, OpenidConnect::AccountControllerPatch)
+  ApplicationController.send(:include, RedmineOpenidConnect::ApplicationControllerPatch)
+  AccountController.send(:include, RedmineOpenidConnect::AccountControllerPatch)
 end
