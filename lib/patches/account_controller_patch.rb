@@ -94,7 +94,7 @@ module RedmineOpenidConnect
     def invalid_credentials_with_openid_connect
       return invalid_credentials_without_openid_connect unless OicSession.plugin_config[:enabled]
       logger.warn "Failed login for '#{params[:username]}' from #{request.remote_ip} at #{Time.now.utc}"
-      flash.now[:error] = l(:notice_account_invalid_creditentials) + ". " + "<a href='#{signout_path}'>Try a different account</a>"
+      flash.now[:error] = (l(:notice_account_invalid_creditentials) + ". " + "<a href='#{signout_path}'>Try a different account</a>").html_safe
     end
 
     def rpiframe
