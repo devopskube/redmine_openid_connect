@@ -76,7 +76,12 @@ module RedmineOpenidConnect
             oic_session.save!
             successful_authentication(user)
           else
-            # Add error handling here
+            flash.now[:warning] ||= "Unable to create user #{user.login}: "
+            user.errors.full_messages.each do |error|
+              logger.warn "Unable to create user #{user.login} due to #{error}"
+              flash.now[:warning] += "#{error}. "
+            end
+            return invalid_credentials
           end
         else
           oic_session.user_id = user.id
