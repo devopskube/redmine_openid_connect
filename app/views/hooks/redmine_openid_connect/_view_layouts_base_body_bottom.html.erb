@@ -1,5 +1,5 @@
 <iframe id="rpiframe" src="<%= oic_rpiframe_url %>" style="display:none" onload="checkSessionPoll('rpiframe')"></iframe>
-<iframe id="opiframe" src="<%= oic_session.dynamic_configuration['check_session_iframe'] %>" style="display:none" onload="checkSessionPoll('opiframe')"></iframe>
+<iframe id="opiframe" src="<%= oic_session.dynamic_config['check_session_iframe'] %>" style="display:none" onload="checkSessionPoll('opiframe')"></iframe>
 <script type="text/javascript">
 checkSessionPoll = (function () {
   var rpiframe_loaded = false;

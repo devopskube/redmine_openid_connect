@@ -20,16 +20,16 @@ class OicSession < ActiveRecord::Base
     client_config[:openid_connect_server_url] + '/.well-known/openid-configuration'
   end
 
-  def get_dynamic_configuration
+  def get_dynamic_config
     HTTParty.get(openid_configuration_url)
   end
 
-  def dynamic_configuration
-    @dynamic_configuration ||= get_dynamic_configuration
+  def dynamic_config
+    @dynamic_config ||= get_dynamic_config
   end
 
   def get_access_token!
-    uri = dynamic_configuration['token_endpoint']
+    uri = dynamic_config['token_endpoint']
 
     response = HTTParty.post(
       uri,
@@ -60,7 +60,7 @@ class OicSession < ActiveRecord::Base
   end
 
   def get_user_info!
-    uri = dynamic_configuration['userinfo_endpoint']
+    uri = dynamic_config['userinfo_endpoint']
 
     response = HTTParty.get(
       uri,
@@ -93,7 +93,7 @@ class OicSession < ActiveRecord::Base
   end
 
   def authorization_url
-    config = dynamic_configuration
+    config = dynamic_config
     authorization_query_string = authorization_query.map do |k,v|
       "#{k}=#{v}"
     end.join("&")
@@ -101,7 +101,7 @@ class OicSession < ActiveRecord::Base
   end
 
   def end_session_url
-    config = dynamic_configuration
+    config = dynamic_config
     end_session_query_string = end_session_query.map do |k,v|
       "#{k}=#{v}"
     end.join("&")
