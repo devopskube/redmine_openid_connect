@@ -15,36 +15,11 @@ module RedmineOpenidConnect
       return require_login_without_openid_connect unless OicSession.client_config[:enabled]
 
       unless User.current.logged?
-        if session[:oic_session_id].blank?
-          oic_session = create_oic_session
-          redirect_to oic_session.authorization_url
-          return false
-        end
-
-        oic_session = OicSession.find session[:oic_session_id]
-        if oic_session.blank?
-          oic_session = create_oic_session
-          redirect_to oic_session.authorization_url
-          return false
-        end
-
-        if oic_session.expires_at < DateTime.now
-          oic_session.destroy
-          oic_session = create_oic_session
-          redirect_to oic_session.authorization_url
-          return false
-        end
-
-        return true
+        redirect_to oic_login_url
+        return false
       end
 
-      return false
-    end
-
-    def create_oic_session
-      oic_session = OicSession.create
-      session[:oic_session_id] = oic_session.id
-      return oic_session
+      return true
     end
 
     # set the current user _without_ resetting the session first

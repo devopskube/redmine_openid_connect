@@ -13,7 +13,7 @@
     var session_state = "<%= @oic_session.session_state %>";
     var salt = CryptoJS.lib.WordArray.random(128 / 8);
     var mes = client_id + " " + CryptoJS.SHA256(client_id + " " + source_origin + " " + session_state + " " + salt) + "." + salt;
-    var reauthorize_url = "<%= oic_reauthorize_url %>";
+    var reauthorize_url = "<%= oic_local_logout_url %>";
 
     function checkSession() {
       var opiframe = window.parent.document.getElementById("opiframe").contentWindow;

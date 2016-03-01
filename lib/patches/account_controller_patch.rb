@@ -20,17 +20,42 @@ module RedmineOpenidConnect
       logout_user
       reset_session
       redirect_to oic_session.end_session_url
+    rescue ActiveRecord::RecordNotFound => e
+      redirect_to oic_local_logout_url
     end
 
-    def oic_reauthorize
-      oic_session = OicSession.find(session[:oic_session_id])
-      oic_session.destroy
+    # performs redirect to SSO server
+    def oic_login
+      if session[:oic_session_id].blank?
+        oic_session = OicSession.create
+        session[:oic_session_id] = oic_session.id
+      else
+        begin
+          oic_session = OicSession.find session[:oic_session_id]
+        rescue ActiveRecord::RecordNotFound => e
+          oic_session = OicSession.create
+          session[:oic_session_id] = oic_session.id
+        end
+
+        if oic_session.complete? && oic_session.expired?
+          response = oic_session.refresh_access_token!
+          if response[:error].present?
+            oic_session.destroy
+            oic_session = OicSession.create
+            session[:oic_session_id] = oic_session.id
+          end
+        end
+      end
+      
+      redirect_to oic_session.authorization_url
+    end
+
+    def oic_local_logout
       logout_user
       reset_session
-      require_login
     end
 
-    def oic
+    def oic_local_login
       if params[:code]
         oic_session = OicSession.find(session[:oic_session_id])
 
@@ -39,13 +64,21 @@ module RedmineOpenidConnect
         end
 
         # verify request state or reauthorize
-        return oic_reauthorize unless oic_session.state == params[:state]
+        unless oic_session.state == params[:state]
+          flash[:error] = "Invalid OpenID Connect request."
+          return redirect_to oic_local_logout
+        end
 
         oic_session.update_attributes!(authorize_params)
 
         # verify id token nonce or reauthorize
-        return oic_reauthorize unless oic_session.nonce == oic_session.claims['nonce']
-
+        if oic_session.id_token.present?
+          unless oic_session.claims['nonce'] == oic_session.nonce
+            flash[:error] = "Invalid ID Token."
+            return redirect_to oic_local_logout
+          end
+        end
+        
         # get access token and user info
         oic_session.get_access_token!
         user_info = oic_session.get_user_info!

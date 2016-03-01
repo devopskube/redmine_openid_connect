@@ -117,18 +117,12 @@ class OicSession < ActiveRecord::Base
 
   def authorization_url
     config = dynamic_config
-    authorization_query_string = authorization_query.map do |k,v|
-      "#{k}=#{v}"
-    end.join("&")
-    config["authorization_endpoint"] + "?" + authorization_query_string
+    config["authorization_endpoint"] + "?" + authorization_query.to_param
   end
 
   def end_session_url
     config = dynamic_config
-    end_session_query_string = end_session_query.map do |k,v|
-      "#{k}=#{v}"
-    end.join("&")
-    config["end_session_endpoint"] + "?" + end_session_query_string
+    config["end_session_endpoint"] + "?" + end_session_query.to_param
   end
 
   def randomize_state!
@@ -141,11 +135,11 @@ class OicSession < ActiveRecord::Base
 
   def authorization_query
     query = {
-      "response_type" => "code+id_token",
+      "response_type" => "code id_token",
       "state" => self.state,
       "nonce" => self.nonce,
-      "scope" => "openid+profile+email+user_name",
-      "redirect_uri" => "#{host_name}/oic",
+      "scope" => "openid profile email user_name",
+      "redirect_uri" => "#{host_name}/oic/local_login",
       "client_id" => client_config["client_id"],
     }
   end
@@ -156,7 +150,7 @@ class OicSession < ActiveRecord::Base
       'code' => code,
       'scope' => 'openid profile email user_name',
       'id_token' => id_token,
-      'redirect_uri' => "#{host_name}/oic",
+      'redirect_uri' => "#{host_name}/oic/local_login",
     }
   end
 
@@ -169,12 +163,11 @@ class OicSession < ActiveRecord::Base
   end
 
   def end_session_query
-   query = {}
-   query['id_token_hint'] = id_token
-   query['session_state'] = session_state
-   query['post_logout_redirect_uri'] = host_name
-
-   query
+   query = {
+     'id_token_hint' => id_token,
+     'session_state' => session_state,
+     'post_logout_redirect_uri' => "#{host_name}/oic/local_logout",
+   }
   end
 
   def expired?
