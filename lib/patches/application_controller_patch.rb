@@ -12,7 +12,7 @@ module RedmineOpenidConnect
 
   module InstanceMethods
     def require_login_with_openid_connect
-      return require_login_without_openid_connect unless OicSession.client_config[:enabled]
+      return require_login_without_openid_connect unless OicSession.enabled?
 
       unless User.current.logged?
         redirect_to oic_login_url
@@ -24,6 +24,8 @@ module RedmineOpenidConnect
 
     # set the current user _without_ resetting the session first
     def logged_user_with_openid_connect=(user)
+      return logged_user_without_openid_connect=(user) unless OicSession.enabled?
+
       if user && user.is_a?(User)
         User.current = user
         start_user_session(user)
