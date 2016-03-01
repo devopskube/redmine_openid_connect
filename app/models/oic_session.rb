@@ -152,4 +152,16 @@ class OicSession < ActiveRecord::Base
 
    query
   end
+
+  def expired?
+    self.expires_at < DateTime.now
+  end
+
+  def incomplete?
+    self.access_token.blank?
+  end
+
+  def complete?
+    self.access_token.present?
+  end
 end
