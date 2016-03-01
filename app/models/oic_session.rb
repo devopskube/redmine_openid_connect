@@ -16,16 +16,20 @@ class OicSession < ActiveRecord::Base
     Setting.host_name
   end
 
-  def openid_configuration_url
+  def self.openid_configuration_url
     client_config[:openid_connect_server_url] + '/.well-known/openid-configuration'
   end
 
-  def get_dynamic_config
+  def self.get_dynamic_config
     HTTParty.get(openid_configuration_url)
   end
 
-  def dynamic_config
+  def self.dynamic_config
     @dynamic_config ||= get_dynamic_config
+  end
+
+  def dynamic_config
+    self.class.dynamic_config
   end
 
   def get_access_token!
