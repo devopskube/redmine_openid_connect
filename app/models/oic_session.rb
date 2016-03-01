@@ -36,15 +36,30 @@ class OicSession < ActiveRecord::Base
     self.class.dynamic_config
   end
 
-  def get_access_token!
+  def self.get_token(query)
     uri = dynamic_config['token_endpoint']
 
     response = HTTParty.post(
       uri,
-      body: access_token_query,
+      body: query,
       basic_auth: {username: client_config[:client_id], password: client_config[:client_secret] }
     )
+  end
 
+  def get_access_token!
+    response = self.class.get_token(access_token_query)
+    if response["error"].blank?
+      self.access_token = response["access_token"] if response["access_token"].present?
+      self.refresh_token = response["refresh_token"] if response["refresh_token"].present?
+      self.id_token = response["id_token"] if response["id_token"].present?
+      self.expires_at = (DateTime.now + response["expires_in"].seconds) if response["expires_in"].present?
+      self.save!
+    end
+    return response
+  end
+
+  def refresh_access_token!
+    response = self.class.get_token(refresh_token_query)
     if response["error"].blank?
       self.access_token = response["access_token"] if response["access_token"].present?
       self.refresh_token = response["refresh_token"] if response["refresh_token"].present?
@@ -139,7 +154,7 @@ class OicSession < ActiveRecord::Base
     query = {
       'grant_type' => 'authorization_code',
       'code' => code,
-      'scope' => 'openid+profile+email+user_name',
+      'scope' => 'openid profile email user_name',
       'id_token' => id_token,
       'redirect_uri' => "#{host_name}/oic",
     }
@@ -149,6 +164,7 @@ class OicSession < ActiveRecord::Base
     query = {
       'grant_type' => 'refresh_token',
       'refresh_token' => refresh_token,
+      'scope' => 'openid profile email user_name',
     }
   end
 
