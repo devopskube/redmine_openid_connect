@@ -24,7 +24,7 @@ module RedmineOpenidConnect
 
     # set the current user _without_ resetting the session first
     def logged_user_with_openid_connect=(user)
-      return logged_user_without_openid_connect=(user) unless OicSession.enabled?
+      return send(:logged_user_without_openid_connect=, user) unless OicSession.enabled?
 
       if user && user.is_a?(User)
         User.current = user
