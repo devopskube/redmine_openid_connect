@@ -13,7 +13,7 @@ module RedmineOpenidConnect
 
   module InstanceMethods
     def logout_with_openid_connect
-      return logout_without_openid_connect unless OicSession.plugin_config[:enabled]
+      return logout_without_openid_connect unless OicSession.client_config[:enabled]
 
       oic_session = OicSession.find(session[:oic_session_id])
       oic_session.destroy
@@ -92,7 +92,7 @@ module RedmineOpenidConnect
     end
 
     def invalid_credentials_with_openid_connect
-      return invalid_credentials_without_openid_connect unless OicSession.plugin_config[:enabled]
+      return invalid_credentials_without_openid_connect unless OicSession.client_config[:enabled]
       logger.warn "Failed login for '#{params[:username]}' from #{request.remote_ip} at #{Time.now.utc}"
       flash.now[:error] = (l(:notice_account_invalid_creditentials) + ". " + "<a href='#{signout_path}'>Try a different account</a>").html_safe
     end

@@ -4,12 +4,12 @@ class OicSession < ActiveRecord::Base
   before_create :randomize_state!
   before_create :randomize_nonce!
 
-  def self.plugin_config
+  def self.client_config
     Setting.plugin_redmine_openid_connect
   end
 
-  def plugin_config
-    self.class.plugin_config
+  def client_config
+    self.class.client_config
   end
 
   def host_name
@@ -17,7 +17,7 @@ class OicSession < ActiveRecord::Base
   end
 
   def openid_configuration_url
-    plugin_config[:openid_connect_server_url] + '/.well-known/openid-configuration'
+    client_config[:openid_connect_server_url] + '/.well-known/openid-configuration'
   end
 
   def get_dynamic_configuration
@@ -34,7 +34,7 @@ class OicSession < ActiveRecord::Base
     response = HTTParty.post(
       uri,
       body: access_token_query,
-      basic_auth: {username: plugin_config[:client_id], password: plugin_config[:client_secret] }
+      basic_auth: {username: client_config[:client_id], password: client_config[:client_secret] }
     )
 
     if response["error"].blank?
@@ -78,9 +78,9 @@ class OicSession < ActiveRecord::Base
   end
 
   def is_authorized?
-    unless plugin_config[:group].blank?
+    unless client_config[:group].blank?
       # only run authorized code if group is specified
-      return user["member_of"].present? && user["member_of"].include?(plugin_config[:group])
+      return user["member_of"].present? && user["member_of"].include?(client_config[:group])
     end
     return true
   end
@@ -123,7 +123,7 @@ class OicSession < ActiveRecord::Base
       "nonce" => self.nonce,
       "scope" => "openid+profile+email+user_name",
       "redirect_uri" => "#{host_name}/oic",
-      "client_id" => plugin_config["client_id"],
+      "client_id" => client_config["client_id"],
     }
   end
 

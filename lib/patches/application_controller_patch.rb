@@ -12,7 +12,7 @@ module RedmineOpenidConnect
 
   module InstanceMethods
     def require_login_with_openid_connect
-      return require_login_without_openid_connect unless OicSession.plugin_config[:enabled]
+      return require_login_without_openid_connect unless OicSession.client_config[:enabled]
 
       unless User.current.logged?
         if session[:oic_session_id].blank?
