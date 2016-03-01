@@ -5,6 +5,7 @@ module RedmineOpenidConnect
 
       base.class_eval do
         # Add before filters and stuff here
+        alias_method_chain :login, :openid_connect
         alias_method_chain :logout, :openid_connect
         alias_method_chain :invalid_credentials, :openid_connect
       end
@@ -12,6 +13,12 @@ module RedmineOpenidConnect
   end # AccountControllerPatch
 
   module InstanceMethods
+    def login_with_openid_connect
+      return login_without_openid_connect unless OicSession.enabled?
+      
+      redirect_to oic_login_url
+    end
+
     def logout_with_openid_connect
       return logout_without_openid_connect unless OicSession.enabled?
 
