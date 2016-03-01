@@ -3,13 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <title>PMGov - RP iframe</title>
+  <script type="text/javascript" src="//crypto-js.googlecode.com/svn/tags/3.0.2/build/rollups/sha256.js"></script>
   <script type="text/javascript">
     var stat = "unchanged";
     var client_id = "<%= @oic_session.plugin_config[:client_id] %>";
-    var check_interval = 10*1000;
+    var check_interval = 5*1000;
+    var source_origin = window.location.origin;
     var target_origin = "<%= @oic_session.plugin_config[:openid_connect_server_url] %>";
     var session_state = "<%= @oic_session.session_state %>";
-    var mes = client_id + " " + session_state;
+    var salt = CryptoJS.lib.WordArray.random(128 / 8);
+    var mes = client_id + " " + CryptoJS.SHA256(client_id + " " + source_origin + " " + session_state + " " + salt) + "." + salt;
+    var reauthorize_url = "<%= oic_reauthorize_url %>";
 
     function checkSession() {
       var opiframe = window.parent.document.getElementById("opiframe").contentWindow;
@@ -22,7 +26,7 @@
       stat = e.data;
 
       if (stat == "changed") {
-        window.parent.location.href = "<%= oic_reauthorize_url %>";
+        window.parent.location.href = reauthorize_url;
       }
     }
   </script>
