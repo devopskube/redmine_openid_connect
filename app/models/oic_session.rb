@@ -135,7 +135,7 @@ class OicSession < ActiveRecord::Base
 
   def authorization_query
     query = {
-      "response_type" => "code id_token",
+      "response_type" => "code",
       "state" => self.state,
       "nonce" => self.nonce,
       "scope" => "openid profile email user_name",
