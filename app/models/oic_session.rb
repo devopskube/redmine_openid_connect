@@ -12,8 +12,12 @@ class OicSession < ActiveRecord::Base
     self.class.client_config
   end
 
-  def host_name
+  def self.host_name
     Setting.host_name
+  end
+
+  def host_name
+    self.class.host_name
   end
 
   def self.openid_configuration_url
