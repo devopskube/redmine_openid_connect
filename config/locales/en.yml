@@ -7,3 +7,4 @@ en:
     openid_connect_server_url: OpenID Connect server url
     client_secret: Client Secret
     group: OpenID Connect Group
+    dynamic_config_expiry: How often to retrieve openid configuration (default 1 day)

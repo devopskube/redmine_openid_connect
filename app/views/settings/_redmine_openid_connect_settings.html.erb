@@ -24,3 +24,8 @@
   <label><%= t('config.group') %></label>
   <%= text_field_tag "settings[group]", @settings[:group] %>
 </p>
+
+<p>
+  <label><%= t('config.dynamic_config_expiry') %></label>
+  <%= text_field_tag "settings[dynamic_config_expiry]", @settings[:dynamic_config_expiry] %>
+</p>
