@@ -14,13 +14,17 @@ module RedmineOpenidConnect
 
   module InstanceMethods
     def login_with_openid_connect
-      return login_without_openid_connect unless OicSession.enabled?
+      if OicSession.disabled? || params[:local_login].present? || request.post?
+        return login_without_openid_connect
+      end
       
       redirect_to oic_login_url
     end
 
     def logout_with_openid_connect
-      return logout_without_openid_connect unless OicSession.enabled?
+      if OicSession.disabled? || params[:local_login].present?
+        return logout_without_openid_connect
+      end
 
       oic_session = OicSession.find(session[:oic_session_id])
       oic_session.destroy
