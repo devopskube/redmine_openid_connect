@@ -24,6 +24,10 @@ class OicSession < ActiveRecord::Base
     client_config[:enabled]
   end
 
+  def self.disabled?
+    !self.enabled?
+  end
+
   def self.openid_configuration_url
     client_config[:openid_connect_server_url] + '/.well-known/openid-configuration'
   end
