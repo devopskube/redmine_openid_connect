@@ -95,7 +95,7 @@ module RedmineOpenidConnect
         user_info = oic_session.get_user_info!
 
         # verify application authorization
-        unless oic_session.is_authorized?
+        unless oic_session.authorized?
           return invalid_credentials
         end
 
@@ -107,15 +107,18 @@ module RedmineOpenidConnect
 
           user.login = user_info["user_name"]
 
-          user.assign_attributes({
+          attributes = {
             firstname: user_info["given_name"],
             lastname: user_info["family_name"],
             mail: user_info["email"],
             mail_notification: 'only_my_events',
             last_login_on: Time.now
-          })
+          }
+
+          user.assign_attributes attributes
 
           if user.save
+            user.update_attribute(:admin, true) if oic_session.admin?
             oic_session.user_id = user.id
             oic_session.save!
             successful_authentication(user)
@@ -128,6 +131,7 @@ module RedmineOpenidConnect
             return invalid_credentials
           end
         else
+          user.update_attribute(:admin, true) if oic_session.admin?
           oic_session.user_id = user.id
           oic_session.save!
           successful_authentication(user)

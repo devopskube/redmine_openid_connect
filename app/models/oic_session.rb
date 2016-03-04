@@ -112,12 +112,31 @@ class OicSession < ActiveRecord::Base
     end
   end
 
-  def is_authorized?
-    unless client_config[:group].blank?
-      # only run authorized code if group is specified
-      return user["member_of"].present? && user["member_of"].include?(client_config[:group])
+  def authorized?
+    if client_config[:group].blank?
+      return true
     end
-    return true
+
+    if client_config[:admin_group].present? &&
+       user["member_of"].include?(client_config[:admin_group])
+      return true
+    end
+
+    if client_config[:group].present? &&
+       user["member_of"].include?(client_config[:group])
+      return true
+    end
+
+    return false
+  end
+
+  def admin?
+    if client_config[:admin_group].present? &&
+       user["member_of"].include?(client_config[:admin_group])
+      return true
+    end
+
+    return false
   end
 
   def user

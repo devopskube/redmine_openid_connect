@@ -6,5 +6,6 @@ en:
     client_id: Client ID
     openid_connect_server_url: OpenID Connect server url
     client_secret: Client Secret
-    group: OpenID Connect Group
+    group: Authorized group (blank if all users are authorized)
+    admin_group: Admins group (members of this group are treated as admin)
     dynamic_config_expiry: How often to retrieve openid configuration (default 1 day)
