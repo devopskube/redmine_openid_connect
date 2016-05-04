@@ -10,6 +10,7 @@ module RedmineOpenidConnect
     end
 
     def view_layouts_base_body_bottom(context={})
+      return unless OicSession.enabled?
       oic_session = OicSession.find context[:request].session[:oic_session_id]
       context[:oic_session] = oic_session
       context[:controller].send(:render_to_string, {
