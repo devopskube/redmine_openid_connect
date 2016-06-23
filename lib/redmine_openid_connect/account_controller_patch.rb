@@ -151,6 +151,10 @@ module RedmineOpenidConnect
       render layout: false
     end
 
+    def sha256
+      render layout: false
+    end
+
     def authorize_params
       # compatible with both rails 3 and 4
       if params.respond_to?(:permit)

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>PMGov - RP iframe</title>
-  <script type="text/javascript" src="//crypto-js.googlecode.com/svn/tags/3.0.2/build/rollups/sha256.js"></script>
+  <script type="text/javascript" src="<%= oic_sha256_url %>"></script>
   <script type="text/javascript">
     var stat = "unchanged";
     var client_id = "<%= @oic_session.client_config[:client_id] %>";
