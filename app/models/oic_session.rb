@@ -13,7 +13,7 @@ class OicSession < ActiveRecord::Base
   end
 
   def self.host_name
-    Setting.host_name
+    Setting.protocol + "://" + Setting.host_name
   end
 
   def host_name
