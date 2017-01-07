@@ -100,6 +100,7 @@ class OicSession < ActiveRecord::Base
   def get_user_info!
     uri = dynamic_config['userinfo_endpoint']
 
+    HTTParty::Basement.default_options.update(verify: false) if client_config[:disable_ssl_validation]
     response = HTTParty.get(
       uri,
       headers: { "Authorization" => "Bearer #{access_token}" }
