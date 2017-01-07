@@ -34,7 +34,7 @@ class OicSession < ActiveRecord::Base
 
   def self.get_dynamic_config
     hash = Digest::SHA1.hexdigest client_config.to_json
-    expiry = client_config['dynamic_config_expiry'] || 86400
+    expiry = client_config[:dynamic_config_expiry] || 86400
     Rails.cache.fetch("oic_session_dynamic_#{hash}", expires_in: expiry) do
       ActiveSupport::HashWithIndifferentAccess.new HTTParty.get(openid_configuration_url)
     end
@@ -171,7 +171,7 @@ class OicSession < ActiveRecord::Base
       "nonce" => self.nonce,
       "scope" => "openid profile email user_name",
       "redirect_uri" => "#{host_name}/oic/local_login",
-      "client_id" => client_config["client_id"],
+      "client_id" => client_config[:client_id],
     }
   end
 
