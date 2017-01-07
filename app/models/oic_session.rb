@@ -36,6 +36,8 @@ class OicSession < ActiveRecord::Base
     hash = Digest::SHA1.hexdigest client_config.to_json
     expiry = client_config[:dynamic_config_expiry] || 86400
     Rails.cache.fetch("oic_session_dynamic_#{hash}", expires_in: expiry) do
+      # Turn off SSL check for testing purposes (since we are using self-signed certificates)
+      HTTParty::Basement.default_options.update(verify: false) if !client_config[:disable_ssl_validation]
       ActiveSupport::HashWithIndifferentAccess.new HTTParty.get(openid_configuration_url)
     end
   end
@@ -51,6 +53,7 @@ class OicSession < ActiveRecord::Base
   def self.get_token(query)
     uri = dynamic_config['token_endpoint']
 
+    HTTParty::Basement.default_options.update(verify: false) if client_config[:disable_ssl_validation]
     response = HTTParty.post(
       uri,
       body: query,
@@ -97,6 +100,7 @@ class OicSession < ActiveRecord::Base
   def get_user_info!
     uri = dynamic_config['userinfo_endpoint']
 
+    HTTParty::Basement.default_options.update(verify: false) if client_config[:disable_ssl_validation]
     response = HTTParty.get(
       uri,
       headers: { "Authorization" => "Bearer #{access_token}" }
@@ -117,10 +121,9 @@ class OicSession < ActiveRecord::Base
       return true
     end
 
-    if client_config[:admin_group].present? &&
-       user["member_of"].include?(client_config[:admin_group])
-      return true
-    end
+    return false if !user["member_of"]
+
+    return true if self.admin?
 
     if client_config[:group].present? &&
        user["member_of"].include?(client_config[:group])
