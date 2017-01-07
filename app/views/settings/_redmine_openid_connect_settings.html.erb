@@ -34,3 +34,8 @@
   <label><%= t('config.dynamic_config_expiry') %></label>
   <%= text_field_tag "settings[dynamic_config_expiry]", @settings[:dynamic_config_expiry] %>
 </p>
+
+<p>
+  <label><%= t('config.disable_ssl_validation') %></label>
+  <%= check_box_tag "settings[disable_ssl_validation]", 1, @settings[:disable_ssl_validation] %>
+</p>
