@@ -12,12 +12,12 @@
 
 <p>
   <label><%= t('config.openid_connect_server_url') %></label>
-  <%= text_field_tag "settings[openid_connect_server_url]", @settings[:openid_connect_server_url] %>
+  <%= text_field_tag "settings[openid_connect_server_url]", @settings[:openid_connect_server_url], :size => "60" %>
 </p>
 
 <p>
   <label><%= t('config.client_secret') %></label>
-  <%= password_field_tag "settings[client_secret]", @settings[:client_secret] %>
+  <%= password_field_tag "settings[client_secret]", @settings[:client_secret], :size => "60" %>
 </p>
 
 <p>
