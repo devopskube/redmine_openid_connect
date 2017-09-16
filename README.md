@@ -29,7 +29,7 @@ http(or s)://your-host-url/oic/local_logout
 If you enable the OpenId Connect plugin and your OpenId Connect Server is not reachable, but you still would like to login, you can use an additional parameter, to be able to login directly into redmine:
 
 ```
-http(or s)://your-host-url/oic/local_login=true
+http(or s)://your-host-url/login?local_login=true
 ```
 
 Enjoy!
