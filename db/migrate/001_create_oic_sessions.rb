@@ -10,7 +10,7 @@ class CreateOicSessions < ActiveRecord::Migration
       t.string :access_token
       t.string :refresh_token
       t.datetime :expires_at
-      t.timestamps, :null => true
+      t.timestamps
     end
 
     add_index :oic_sessions, :user_id
