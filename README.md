@@ -1,5 +1,7 @@
 # Redmine OpenID Connect Plugin #
 
+Based on the work from [intelimina](https://bitbucket.org/intelimina/redmine_openid_connect).
+
 ## Introduction ##
 This is a plugin based on the implementation of redmine_cas. It redirects to a SSO server bypassing the original Redmine login authentication and using the SSO server authentication in it's place.
 
