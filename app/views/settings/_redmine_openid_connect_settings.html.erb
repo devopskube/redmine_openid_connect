@@ -2,7 +2,7 @@
 
 <p>
   <label><%= t('config.enabled') %></label>
-  <%= check_box_tag "settings[enabled]", 1, @settings[:enabled] %>
+  <%= check_box_tag "settings[enabled]", false, @settings[:enabled] %>
 </p>
 
 <p>
@@ -37,5 +37,5 @@
 
 <p>
   <label><%= t('config.disable_ssl_validation') %></label>
-  <%= check_box_tag "settings[disable_ssl_validation]", 1, @settings[:disable_ssl_validation] %>
+  <%= check_box_tag "settings[disable_ssl_validation]", true, @settings[:disable_ssl_validation] %>
 </p>
