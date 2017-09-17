@@ -2,40 +2,40 @@
 
 <p>
   <label><%= t('config.enabled') %></label>
-  <%= check_box_tag "settings[enabled]", false, @settings[:enabled] %>
+  <%= check_box_tag 'settings[enabled]', false, @settings['enabled'] %>
 </p>
 
 <p>
   <label><%= t('config.client_id') %></label>
-  <%= text_field_tag "settings[client_id]", @settings[:client_id] %>
+  <%= text_field_tag 'settings[client_id]', @settings['client_id'] %>
 </p>
 
 <p>
   <label><%= t('config.openid_connect_server_url') %></label>
-  <%= text_field_tag "settings[openid_connect_server_url]", @settings[:openid_connect_server_url], :size => "60" %>
+  <%= text_field_tag 'settings[openid_connect_server_url]', @settings['openid_connect_server_url'], :size => '60' %>
 </p>
 
 <p>
   <label><%= t('config.client_secret') %></label>
-  <%= password_field_tag "settings[client_secret]", @settings[:client_secret], :size => "60" %>
+  <%= password_field_tag 'settings[client_secret]', @settings['client_secret'], :size => '60' %>
 </p>
 
 <p>
   <label><%= t('config.group') %></label>
-  <%= text_field_tag "settings[group]", @settings[:group] %>
+  <%= text_field_tag 'settings[group]', @settings['group'] %>
 </p>
 
 <p>
   <label><%= t('config.admin_group') %></label>
-  <%= text_field_tag "settings[admin_group]", @settings[:admin_group] %>
+  <%= text_field_tag 'settings[admin_group]', @settings['admin_group'] %>
 </p>
 
 <p>
   <label><%= t('config.dynamic_config_expiry') %></label>
-  <%= text_field_tag "settings[dynamic_config_expiry]", @settings[:dynamic_config_expiry] %>
+  <%= text_field_tag 'settings[dynamic_config_expiry]', @settings['dynamic_config_expiry'] %>
 </p>
 
 <p>
   <label><%= t('config.disable_ssl_validation') %></label>
-  <%= check_box_tag "settings[disable_ssl_validation]", true, @settings[:disable_ssl_validation] %>
+  <%= check_box_tag 'settings[disable_ssl_validation]', true, @settings['disable_ssl_validation'] %>
 </p>
