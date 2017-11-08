@@ -29,6 +29,9 @@ class OicSession < ActiveRecord::Base
   end
 
   def self.openid_configuration_url
+    puts "openid_configuration_url"
+    puts client_config[:openid_connect_server_url]
+    puts "----"
     client_config[:openid_connect_server_url] + '/.well-known/openid-configuration'
   end
 
