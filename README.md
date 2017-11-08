@@ -13,11 +13,12 @@ client app.
 1. Go to your Redmine plugins directory.
 2. Clone/copy this plugin.
 3. Run bundle install
-4. Restart your server
-5. Login as administrator and head over to the plugins page.
-6. Open the configuration page for redmine openid connect plugin.
-7. Fill in the details.
-8. Go to your SSO server and add this url as a registered login url and logout url respectively:
+4. Run bundle exec rake redmine:plugins:migrate RAILS_ENV=production
+5. Restart your server
+6. Login as administrator and head over to the plugins page.
+7. Open the configuration page for redmine openid connect plugin.
+8. Fill in the details.
+9. Go to your SSO server and add this url as a registered login url and logout url respectively:
 
 ```
 http(or s)://your-host-url/oic/local_login
