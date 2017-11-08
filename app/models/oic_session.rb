@@ -21,7 +21,7 @@ class OicSession < ActiveRecord::Base
   end
 
   def self.enabled?
-    client_config[:enabled]
+    client_config['enabled']
   end
 
   def self.disabled?
@@ -34,9 +34,9 @@ class OicSession < ActiveRecord::Base
 
   def self.get_dynamic_config
     hash = Digest::SHA1.hexdigest client_config.to_json
-    expiry = client_config[:dynamic_config_expiry] || 86400
+    expiry = client_config['dynamic_config_expiry'] || 86400
     Rails.cache.fetch("oic_session_dynamic_#{hash}", expires_in: expiry) do
-      HTTParty::Basement.default_options.update(verify: false) if client_config[:disable_ssl_validation]
+      HTTParty::Basement.default_options.update(verify: false) if client_config['disable_ssl_validation']
       ActiveSupport::HashWithIndifferentAccess.new HTTParty.get(openid_configuration_url)
     end
   end
@@ -52,11 +52,11 @@ class OicSession < ActiveRecord::Base
   def self.get_token(query)
     uri = dynamic_config['token_endpoint']
 
-    HTTParty::Basement.default_options.update(verify: false) if client_config[:disable_ssl_validation]
+    HTTParty::Basement.default_options.update(verify: false) if client_config['disable_ssl_validation']
     response = HTTParty.post(
       uri,
       body: query,
-      basic_auth: {username: client_config[:client_id], password: client_config[:client_secret] }
+      basic_auth: {username: client_config['client_id'], password: client_config['client_secret'] }
     )
   end
 
@@ -99,7 +99,7 @@ class OicSession < ActiveRecord::Base
   def get_user_info!
     uri = dynamic_config['userinfo_endpoint']
 
-    HTTParty::Basement.default_options.update(verify: false) if client_config[:disable_ssl_validation]
+    HTTParty::Basement.default_options.update(verify: false) if client_config['disable_ssl_validation']
     response = HTTParty.get(
       uri,
       headers: { "Authorization" => "Bearer #{access_token}" }
@@ -116,7 +116,7 @@ class OicSession < ActiveRecord::Base
   end
 
   def authorized?
-    if client_config[:group].blank?
+    if client_config['group'].blank?
       return true
     end
 
@@ -124,8 +124,8 @@ class OicSession < ActiveRecord::Base
 
     return true if self.admin?
 
-    if client_config[:group].present? &&
-       user["member_of"].include?(client_config[:group])
+    if client_config['group'].present? &&
+       user["member_of"].include?(client_config['group'])
       return true
     end
 
@@ -133,8 +133,8 @@ class OicSession < ActiveRecord::Base
   end
 
   def admin?
-    if client_config[:admin_group].present? &&
-       user["member_of"].include?(client_config[:admin_group])
+    if client_config['admin_group'].present? &&
+       user["member_of"].include?(client_config['admin_group'])
       return true
     end
 
@@ -173,7 +173,7 @@ class OicSession < ActiveRecord::Base
       "nonce" => self.nonce,
       "scope" => "openid profile email user_name",
       "redirect_uri" => "#{host_name}/oic/local_login",
-      "client_id" => client_config[:client_id],
+      "client_id" => client_config['client_id'],
     }
   end
 
