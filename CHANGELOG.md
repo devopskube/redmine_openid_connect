@@ -1,7 +1,7 @@
 # Changelog
 
 ## 0.9.3
-
+* fix problem with symbols vs. strings usage
 
 ## 0.9.2
 * fix settings page
