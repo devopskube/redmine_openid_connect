@@ -1,5 +1,7 @@
 # Changelog
 
+## 0.9.4
+
 ## 0.9.3
 * fix problem with symbols vs. strings usage
 
