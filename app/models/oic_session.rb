@@ -184,6 +184,8 @@ class OicSession < ActiveRecord::Base
       'scope' => 'openid profile email user_name',
       'id_token' => id_token,
       'redirect_uri' => "#{host_name}/oic/local_login",
+      'client_id' => client_config['client_id'],
+      'client_secret' => client_config['client_secret'],
     }
   end
 
