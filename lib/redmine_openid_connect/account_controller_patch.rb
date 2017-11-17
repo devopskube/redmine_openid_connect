@@ -17,7 +17,7 @@ module RedmineOpenidConnect
       if OicSession.disabled? || params[:local_login].present? || request.post?
         return login_without_openid_connect
       end
-      
+
       redirect_to oic_login_url
     end
 
@@ -57,7 +57,7 @@ module RedmineOpenidConnect
           end
         end
       end
-      
+
       redirect_to oic_session.authorization_url
     end
 
@@ -89,7 +89,7 @@ module RedmineOpenidConnect
             return redirect_to oic_local_logout
           end
         end
-        
+
         # get access token and user info
         oic_session.get_access_token!
         user_info = oic_session.get_user_info!
@@ -105,7 +105,7 @@ module RedmineOpenidConnect
         if user.nil?
           user = User.new
 
-          user.login = user_info["user_name"]
+          user.login = user_info["preferred_username"]
 
           attributes = {
             firstname: user_info["given_name"],

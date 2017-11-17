@@ -171,7 +171,7 @@ class OicSession < ActiveRecord::Base
       "response_type" => "code",
       "state" => self.state,
       "nonce" => self.nonce,
-      "scope" => "openid profile email user_name",
+      "scope" => "openid profile email",
       "redirect_uri" => "#{host_name}/oic/local_login",
       "client_id" => client_config['client_id'],
     }
@@ -181,7 +181,7 @@ class OicSession < ActiveRecord::Base
     query = {
       'grant_type' => 'authorization_code',
       'code' => code,
-      'scope' => 'openid profile email user_name',
+      'scope' => 'openid profile email',
       'id_token' => id_token,
       'redirect_uri' => "#{host_name}/oic/local_login",
     }
@@ -191,7 +191,7 @@ class OicSession < ActiveRecord::Base
     query = {
       'grant_type' => 'refresh_token',
       'refresh_token' => refresh_token,
-      'scope' => 'openid profile email user_name',
+      'scope' => 'openid profile email',
     }
   end
 
