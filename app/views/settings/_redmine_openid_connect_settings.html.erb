@@ -21,6 +21,11 @@
 </p>
 
 <p>
+  <label><%= t('config.scopes') %></label>
+  <%= text_field_tag 'settings[scopes]', @settings['scopes'], :size => '60' %>
+</p>
+
+<p>
   <label><%= t('config.group') %></label>
   <%= text_field_tag 'settings[group]', @settings['group'] %>
 </p>

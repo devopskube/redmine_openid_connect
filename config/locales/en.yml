@@ -5,6 +5,7 @@ en:
     header: OpenID Connect Configuration
     client_id: Client ID
     openid_connect_server_url: OpenID Connect server url
+    scopes: OpenID Connect scopes (comma-separated)
     client_secret: Client Secret
     group: Authorized group (blank if all users are authorized)
     admin_group: Admins group (members of this group are treated as admin)
