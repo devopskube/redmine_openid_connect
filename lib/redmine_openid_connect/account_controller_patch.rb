@@ -30,7 +30,7 @@ module RedmineOpenidConnect
       oic_session.destroy
       logout_user
       reset_session
-      redirect_to oic_session.end_session_url
+      redirect_to oic_session.end_session_url if oic_session.end_session_url
     rescue ActiveRecord::RecordNotFound => e
       redirect_to oic_local_logout_url
     end

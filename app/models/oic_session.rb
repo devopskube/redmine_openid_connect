@@ -155,6 +155,7 @@ class OicSession < ActiveRecord::Base
 
   def end_session_url
     config = dynamic_config
+    return if config["end_session_endpoint"].nil?
     config["end_session_endpoint"] + "?" + end_session_query.to_param
   end
 
