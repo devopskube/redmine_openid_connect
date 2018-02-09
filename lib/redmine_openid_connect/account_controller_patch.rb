@@ -105,7 +105,7 @@ module RedmineOpenidConnect
         if user.nil?
           user = User.new
 
-          user.login = user_info["user_name"]
+          user.login = user_info["user_name"] || user_info["nickname"]
 
           attributes = {
             firstname: user_info["given_name"],
