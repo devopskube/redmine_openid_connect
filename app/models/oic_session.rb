@@ -204,7 +204,7 @@ class OicSession < ActiveRecord::Base
   end
 
   def expired?
-    self.expires_at < DateTime.now
+    self.expires_at.nil? ? false : (self.expires_at < DateTime.now)
   end
 
   def incomplete?
