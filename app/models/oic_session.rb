@@ -155,6 +155,7 @@ class OicSession < ActiveRecord::Base
 
   def end_session_url
     config = dynamic_config
+    return if config["end_session_endpoint"].nil?
     config["end_session_endpoint"] + "?" + end_session_query.to_param
   end
 
@@ -171,7 +172,7 @@ class OicSession < ActiveRecord::Base
       "response_type" => "code",
       "state" => self.state,
       "nonce" => self.nonce,
-      "scope" => "openid profile email user_name",
+      "scope" => scopes,
       "redirect_uri" => "#{host_name}/oic/local_login",
       "client_id" => client_config['client_id'],
     }
@@ -181,7 +182,7 @@ class OicSession < ActiveRecord::Base
     query = {
       'grant_type' => 'authorization_code',
       'code' => code,
-      'scope' => 'openid profile email user_name',
+      'scope' => scopes,
       'id_token' => id_token,
       'redirect_uri' => "#{host_name}/oic/local_login",
     }
@@ -191,7 +192,7 @@ class OicSession < ActiveRecord::Base
     query = {
       'grant_type' => 'refresh_token',
       'refresh_token' => refresh_token,
-      'scope' => 'openid profile email user_name',
+      'scope' => scopes,
     }
   end
 
@@ -204,7 +205,7 @@ class OicSession < ActiveRecord::Base
   end
 
   def expired?
-    self.expires_at < DateTime.now
+    self.expires_at.nil? ? false : (self.expires_at < DateTime.now)
   end
 
   def incomplete?
@@ -214,4 +215,13 @@ class OicSession < ActiveRecord::Base
   def complete?
     self.access_token.present?
   end
+
+  def scopes
+    if client_config["scopes"].nil?
+      return "openid profile email user_name"
+    else
+      client_config["scopes"].split(',').each(&:strip).join(' ')
+    end
+  end
+
 end
