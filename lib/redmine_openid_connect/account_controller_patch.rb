@@ -109,12 +109,13 @@ module RedmineOpenidConnect
 
           firstname = user_info["given_name"]
           lastname = user_info["family_name"]
+
           if (firstname.nil? || lastname.nil?) && user_info["name"]
             parts = user_info["name"].split
             if parts.length >= 2
               firstname = parts[0]
               lastname = parts[-1]
-            end
+            end            
           end
 
           attributes = {
