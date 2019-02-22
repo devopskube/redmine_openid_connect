@@ -17,7 +17,7 @@ module RedmineOpenidConnect
       if OicSession.disabled? || params[:local_login].present? || request.post?
         return login_without_openid_connect
       end
-      
+
       redirect_to oic_login_url
     end
 
@@ -30,7 +30,7 @@ module RedmineOpenidConnect
       oic_session.destroy
       logout_user
       reset_session
-      redirect_to oic_session.end_session_url
+      redirect_to oic_session.end_session_url if oic_session.end_session_url
     rescue ActiveRecord::RecordNotFound => e
       redirect_to oic_local_logout_url
     end
@@ -57,7 +57,7 @@ module RedmineOpenidConnect
           end
         end
       end
-      
+
       redirect_to oic_session.authorization_url
     end
 
@@ -76,7 +76,7 @@ module RedmineOpenidConnect
 
         # verify request state or reauthorize
         unless oic_session.state == params[:state]
-          flash[:error] = "Invalid OpenID Connect request."
+          flash[:error] = "Requête OpenID Connect invalide."
           return redirect_to oic_local_logout
         end
 
@@ -85,11 +85,11 @@ module RedmineOpenidConnect
         # verify id token nonce or reauthorize
         if oic_session.id_token.present?
           unless oic_session.claims['nonce'] == oic_session.nonce
-            flash[:error] = "Invalid ID Token."
+            flash[:error] = "ID Token invalide."
             return redirect_to oic_local_logout
           end
         end
-        
+
         # get access token and user info
         oic_session.get_access_token!
         user_info = oic_session.get_user_info!
@@ -105,11 +105,21 @@ module RedmineOpenidConnect
         if user.nil?
           user = User.new
 
-          user.login = user_info["user_name"]
+          user.login = user_info["user_name"] || user_info["nickname"]
+
+          firstname = user_info["given_name"]
+          lastname = user_info["family_name"]
+          if (firstname.nil? || lastname.nil?) && user_info["name"]
+            parts = user_info["name"].split
+            if parts.length >= 2
+              firstname = parts[0]
+              lastname = parts[-1]
+            end
+          end
 
           attributes = {
-            firstname: user_info["given_name"],
-            lastname: user_info["family_name"],
+            firstname: firstname || "",
+            lastname: lastname || "",
             mail: user_info["email"],
             mail_notification: 'only_my_events',
             last_login_on: Time.now
@@ -123,9 +133,9 @@ module RedmineOpenidConnect
             oic_session.save!
             successful_authentication(user)
           else
-            flash.now[:warning] ||= "Unable to create user #{user.login}: "
+            flash.now[:warning] ||= "Ne peut créer l'utilisateur #{user.login}: "
             user.errors.full_messages.each do |error|
-              logger.warn "Unable to create user #{user.login} due to #{error}"
+              logger.warn "Ne peut créer l'utilisateur #{user.login}, erreur #{error}"
               flash.now[:warning] += "#{error}. "
             end
             return invalid_credentials
@@ -142,8 +152,8 @@ module RedmineOpenidConnect
     def invalid_credentials_with_openid_connect
       return invalid_credentials_without_openid_connect unless OicSession.enabled?
 
-      logger.warn "Failed login for '#{params[:username]}' from #{request.remote_ip} at #{Time.now.utc}"
-      flash.now[:error] = (l(:notice_account_invalid_creditentials) + ". " + "<a href='#{signout_path}'>Try a different account</a>").html_safe
+      logger.warn "Échec de connexion pour '#{params[:username]}' depuis #{request.remote_ip} à #{Time.now.utc}"
+      flash.now[:error] = (l(:notice_account_invalid_creditentials) + ". " + "<a href='#{signout_path}'>Essayez avec un autre identifiant</a>").html_safe
     end
 
     def rpiframe
