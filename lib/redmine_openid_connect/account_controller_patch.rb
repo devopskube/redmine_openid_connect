@@ -1,29 +1,17 @@
 module RedmineOpenidConnect
   module AccountControllerPatch
-    def self.included(base)
-      base.send(:include, InstanceMethods)
 
-      base.class_eval do
-        # Add before filters and stuff here
-        alias_method_chain :login, :openid_connect
-        alias_method_chain :logout, :openid_connect
-        alias_method_chain :invalid_credentials, :openid_connect
-      end
-    end
-  end # AccountControllerPatch
-
-  module InstanceMethods
-    def login_with_openid_connect
+    def login
       if OicSession.disabled? || params[:local_login].present? || request.post?
-        return login_without_openid_connect
+        return super
       end
 
       redirect_to oic_login_url
     end
 
-    def logout_with_openid_connect
+    def logout
       if OicSession.disabled? || params[:local_login].present?
-        return logout_without_openid_connect
+        return super
       end
 
       oic_session = OicSession.find(session[:oic_session_id])
@@ -150,8 +138,8 @@ module RedmineOpenidConnect
       end
     end
 
-    def invalid_credentials_with_openid_connect
-      return invalid_credentials_without_openid_connect unless OicSession.enabled?
+    def invalid_credentials
+      return super unless OicSession.enabled?
 
       logger.warn "Échec de connexion pour '#{params[:username]}' depuis #{request.remote_ip} à #{Time.now.utc}"
       flash.now[:error] = (l(:notice_account_invalid_creditentials) + ". " + "<a href='#{signout_path}'>Essayez avec un autre identifiant</a>").html_safe
@@ -184,5 +172,5 @@ module RedmineOpenidConnect
         end
       end
     end
-  end # InstanceMethods
+  end # AccountControllerPatch
 end
