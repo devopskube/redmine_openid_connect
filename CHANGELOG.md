@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.4
+* Support Redmine 4
+* Upgrade deprecated calls
+
 ## 0.9.3
 * fix problem with symbols vs. strings usage
 
