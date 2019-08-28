@@ -1,5 +1,5 @@
 # Chinese strings go here for Rails i18n
-en:
+zh:
   config:
     enabled: 启用
     header: OpenID 连接配置
