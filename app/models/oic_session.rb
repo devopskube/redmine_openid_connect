@@ -86,7 +86,11 @@ class OicSession < ActiveRecord::Base
 
   def self.parse_token(token)
     jwt = token.split('.')
-    return JSON::parse(Base64::decode64(jwt[1]))
+    begin
+      return JSON::parse(Base64::decode64(jwt[1]))
+    rescue => exception
+      return JSON::parse(Base64::urlsafe_decode64(jwt[1]))
+    end
   end
 
   def claims
@@ -144,7 +148,11 @@ class OicSession < ActiveRecord::Base
 
   def user
     if @user.blank? || id_token_changed?
-      @user = JSON::parse(Base64::decode64(id_token.split('.')[1]))
+      begin
+        @user = JSON::parse(Base64::decode64(id_token.split('.')[1]))
+      rescue => exception
+        @user = JSON::parse(Base64::urlsafe_decode64(id_token.split('.')[1]))
+      end
     end
     return @user
   end
@@ -218,7 +226,7 @@ class OicSession < ActiveRecord::Base
   end
 
   def scopes
-    if client_config["scopes"].nil? 
+    if client_config["scopes"].nil?
       return "openid profile email user_name"
     else
       client_config["scopes"].split(',').each(&:strip).join(' ')
