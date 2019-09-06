@@ -1,0 +1,15 @@
+# Chinese strings go here for Rails i18n
+zh:
+  config:
+    enabled: 启用
+    header: OpenID 连接配置
+    client_id: 客户端 ID
+    openid_connect_server_url: OpenID 服务器链接地址
+    scopes: OpenID Connect scopes (","逗号分隔)
+    client_secret: 客户端密码
+    group: 授权组 名称（如果所有用户都被授权，则留空）
+    admin_group: 管理员组 名称（该组的成员将被视为Redmine管理员）
+    dynamic_config_expiry: 从服务器拉取配置的时间周期 (单位：秒；默认1天)
+  local_logout:
+    logout_message: 您的账户已注销，
+    relogin_message: 点击重新登陆。
