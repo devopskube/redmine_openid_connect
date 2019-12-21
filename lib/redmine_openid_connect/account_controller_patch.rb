@@ -93,7 +93,7 @@ module RedmineOpenidConnect
         if user.nil?
           user = User.new
 
-          user.login = user_info["user_name"] || user_info["nickname"]
+          user.login = user_info["user_name"] || user_info["nickname"] || user_info["preferred_username"]
 
           firstname = user_info["given_name"]
           lastname = user_info["family_name"]
