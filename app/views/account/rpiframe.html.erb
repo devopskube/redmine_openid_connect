@@ -3,17 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <title>PMGov - RP iframe</title>
-  <script type="text/javascript" src="<%= oic_sha256_url %>"></script>
   <script type="text/javascript">
     var stat = "unchanged";
     var client_id = "<%= @oic_session.client_config['client_id'] %>";
     var check_interval = 5*1000;
     var source_origin = window.location.origin;
-    var target_origin = "<%= @oic_session.client_config['openid_connect_server_url'] %>";
+    var target_origin = new URL("<%= @oic_session.client_config['openid_connect_server_url'] %>").origin;
     var session_state = "<%= @oic_session.session_state %>";
-    var salt = CryptoJS.lib.WordArray.random(128 / 8);
-    var mes = client_id + " " + CryptoJS.SHA256(client_id + " " + source_origin + " " + session_state + " " + salt) + "." + salt;
+    var mes = client_id + " " + session_state;
     var reauthorize_url = "<%= oic_local_logout_url %>";
+    var timer = setInterval(checkSession(), check_interval);
 
     function checkSession() {
       var opiframe = window.parent.document.getElementById("opiframe").contentWindow;

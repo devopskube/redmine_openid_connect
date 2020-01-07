@@ -103,7 +103,7 @@ module RedmineOpenidConnect
             if parts.length >= 2
               firstname = parts[0]
               lastname = parts[-1]
-            end            
+            end
           end
 
           attributes = {
@@ -147,10 +147,6 @@ module RedmineOpenidConnect
 
     def rpiframe
       @oic_session = OicSession.find(session[:oic_session_id])
-      render layout: false
-    end
-
-    def sha256
       render layout: false
     end
 
