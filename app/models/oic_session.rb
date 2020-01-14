@@ -115,10 +115,24 @@ class OicSession < ActiveRecord::Base
     end
   end
 
+  def check_keycloak_role(role)
+    # keycloak way...
+    kc_is_in_role = false
+    if user["realm_access"].present?
+      kc_is_in_role = user["realm_access"]["roles"].include?(role)
+    end
+    if user["resource_access"].present? && user["resource_access"][client_config['client_id']].present?
+      kc_is_in_role = user["resource_access"][client_config['client_id']]["roles"].include?(role)
+    end
+    return true if kc_is_in_role 
+  end
+
   def authorized?
     if client_config['group'].blank?
       return true
     end
+
+    return true if check_keycloak_role client_config['group']
 
     return false if !user["member_of"]
 
@@ -133,17 +147,22 @@ class OicSession < ActiveRecord::Base
   end
 
   def admin?
-    if client_config['admin_group'].present? &&
-       user["member_of"].include?(client_config['admin_group'])
-      return true
+    if client_config['admin_group'].present?
+      if user["member_of"].present?
+        return true if user["member_of"].include?(client_config['admin_group'])
+      end
+      # keycloak way...
+      return true if check_keycloak_role client_config['admin_group']
     end
-
+    
     return false
   end
 
   def user
-    if @user.blank? || id_token_changed?
+    if id_token?
       @user = JSON::parse(Base64::decode64(id_token.split('.')[1]))
+    else  # keycloak way...
+      @user = JSON::parse(Base64::decode64(access_token.split('.')[1]))
     end
     return @user
   end
@@ -197,11 +216,14 @@ class OicSession < ActiveRecord::Base
   end
 
   def end_session_query
-   query = {
-     'id_token_hint' => id_token,
-     'session_state' => session_state,
-     'post_logout_redirect_uri' => "#{host_name}/oic/local_logout",
-   }
+    query = {
+      'session_state' => session_state,
+      'post_logout_redirect_uri' => "#{host_name}/oic/local_logout",
+    }
+    if id_token.present? 
+      query['id_token_hint'] = id_token
+    end
+   return query
   end
 
   def expired?

@@ -22,7 +22,7 @@ module RedmineOpenidConnect
     rescue ActiveRecord::RecordNotFound => e
       redirect_to oic_local_logout_url
     end
-
+    
     # performs redirect to SSO server
     def oic_login
       if session[:oic_session_id].blank?
@@ -93,7 +93,7 @@ module RedmineOpenidConnect
         if user.nil?
           user = User.new
 
-          user.login = user_info["user_name"] || user_info["nickname"]
+          user.login = user_info["user_name"] || user_info["nickname"] || user_info["preferred_username"]
 
           firstname = user_info["given_name"]
           lastname = user_info["family_name"]
@@ -117,9 +117,10 @@ module RedmineOpenidConnect
           user.assign_attributes attributes
 
           if user.save
-            user.update_attribute(:admin, true) if oic_session.admin?
+            user.update_attribute(:admin, oic_session.admin?)
             oic_session.user_id = user.id
             oic_session.save!
+            # after user creation just show "My Page" don't redirect to remember
             successful_authentication(user)
           else
             flash.now[:warning] ||= "Ne peut créer l'utilisateur #{user.login}: "
@@ -130,9 +131,14 @@ module RedmineOpenidConnect
             return invalid_credentials
           end
         else
-          user.update_attribute(:admin, true) if oic_session.admin?
+          user.update_attribute(:admin, oic_session.admin?)
           oic_session.user_id = user.id
           oic_session.save!
+          # redirect back to initial URL
+          if session[:remember_url]
+            params[:back_url] = session[:remember_url]
+            session[:remember_url] = nil
+          end
           successful_authentication(user)
         end # if user.nil?
       end
