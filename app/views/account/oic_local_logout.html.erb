@@ -1,1 +1,3 @@
-Vous avez été déconnecté. <a href="<%= oic_login_url %>">Cliquez ici pour vous connecter à nouveau</a>.
+<p class="oic-logged-out">
+    <%= l(:oic_logout_success, oic_login_url).html_safe %>
+</p>
