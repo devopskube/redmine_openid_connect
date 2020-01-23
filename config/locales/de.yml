@@ -6,7 +6,7 @@ de:
     openid_connect_server_url: OpenID Connect Server-Url
     scopes: OpenID Connect Scopes (kommasepariert)
     client_secret: Client-Secret
-    group: Rolle "darf eingeloggen" (leer lassen, falls jeder User einloggen darf)
+    group: Rolle "darf einloggen" (leer lassen, falls jeder authentifizierte User einloggen darf)
     admin_group: Rolle "Administratoren" (User mit dieser Rolle werden als Administrator behandelt)
     dynamic_config_expiry: "Intervall für Aktualisierung der OpenID-Einstellungen (Default: 1 day)"
   oic_logout_success: 'Sie wurden ausgeloggt. <a href="%{value}">Klicken Sie hier, um sich erneut einzuloggen</a>.'
