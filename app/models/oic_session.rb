@@ -124,6 +124,9 @@ class OicSession < ActiveRecord::Base
     if user["resource_access"].present? && user["resource_access"][client_config['client_id']].present?
       kc_is_in_role = user["resource_access"][client_config['client_id']]["roles"].include?(role)
     end
+    if user["groups"].present?
+      kc_is_in_role = user["groups"].include?(role)
+    end
     return true if kc_is_in_role 
   end
 
