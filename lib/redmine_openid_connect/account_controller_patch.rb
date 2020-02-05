@@ -87,24 +87,26 @@ module RedmineOpenidConnect
           return invalid_credentials
         end
 
+        username = user_info["user_name"] || user_info["nickname"] || user_info["preferred_username"] || user_info["username"]
+
         # Check if there's already an existing user
-        user = User.find_by_mail(user_info["email"])
+        user = User.find_by_login(username)
+
+        firstname = user_info["given_name"]
+        lastname = user_info["family_name"]
+
+        if (firstname.nil? || lastname.nil?) && user_info["name"]
+          parts = user_info["name"].split
+          if parts.length >= 2
+            firstname = parts[0]
+            lastname = parts[-1]
+          end
+        end
 
         if user.nil?
           user = User.new
 
-          user.login = user_info["user_name"] || user_info["nickname"] || user_info["preferred_username"]
-
-          firstname = user_info["given_name"]
-          lastname = user_info["family_name"]
-
-          if (firstname.nil? || lastname.nil?) && user_info["name"]
-            parts = user_info["name"].split
-            if parts.length >= 2
-              firstname = parts[0]
-              lastname = parts[-1]
-            end
-          end
+          user.login = username
 
           attributes = {
             firstname: firstname || "",
@@ -118,6 +120,9 @@ module RedmineOpenidConnect
 
           if user.save
             user.update_attribute(:admin, oic_session.admin?)
+
+            update_groups(user,user_info['groups'])
+
             oic_session.user_id = user.id
             oic_session.save!
             # after user creation just show "My Page" don't redirect to remember
@@ -132,6 +137,15 @@ module RedmineOpenidConnect
           end
         else
           user.update_attribute(:admin, oic_session.admin?)
+
+          if Setting.plugin_redmine_openid_connect['override_user_attributes']
+            user.update_attribute(:firstname, firstname)
+            user.update_attribute(:lastname, lastname)
+            user.update_attribute(:mail, user_info["email"])
+          end
+
+          update_groups(user,user_info['groups'])
+
           oic_session.user_id = user.id
           oic_session.save!
           # redirect back to initial URL
@@ -171,6 +185,29 @@ module RedmineOpenidConnect
             'id_token',
             'session_state',
           ].include?(k)
+        end
+      end
+    end
+
+    def update_groups(user, groups)
+      groups.each do |group|
+        begin
+          rm_g = Group.find_by(:lastname => group.to_s.downcase)
+          logger.error("group found")
+          if not rm_g.user_ids.include? user.id
+            rm_g.users << user
+            logger.error("user added to group")
+          end
+        rescue ActiveRecord::RecordNotFound
+          logger.error("no group " + group)
+          g = Group.new()
+          g.name = group
+          g.user_ids = [user.id]
+          if g.save()
+            logger.error("group added")
+          end
+        rescue => e
+          logger.error(e)
         end
       end
     end
