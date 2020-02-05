@@ -22,7 +22,7 @@ module RedmineOpenidConnect
     rescue ActiveRecord::RecordNotFound => e
       redirect_to oic_local_logout_url
     end
-    
+
     # performs redirect to SSO server
     def oic_login
       if session[:oic_session_id].blank?
@@ -64,7 +64,7 @@ module RedmineOpenidConnect
 
         # verify request state or reauthorize
         unless oic_session.state == params[:state]
-          flash[:error] = "Requête OpenID Connect invalide."
+          flash[:error] = "Invalid OpenID Connect request."
           return redirect_to oic_local_logout
         end
 
@@ -73,7 +73,7 @@ module RedmineOpenidConnect
         # verify id token nonce or reauthorize
         if oic_session.id_token.present?
           unless oic_session.claims['nonce'] == oic_session.nonce
-            flash[:error] = "ID Token invalide."
+            flash[:error] = "ID Token invalid."
             return redirect_to oic_local_logout
           end
         end
@@ -123,9 +123,9 @@ module RedmineOpenidConnect
             # after user creation just show "My Page" don't redirect to remember
             successful_authentication(user)
           else
-            flash.now[:warning] ||= "Ne peut créer l'utilisateur #{user.login}: "
+            flash.now[:warning] ||= "Cannot create user #{user.login}: "
             user.errors.full_messages.each do |error|
-              logger.warn "Ne peut créer l'utilisateur #{user.login}, erreur #{error}"
+              logger.warn "Cannot create user #{user.login}, error #{error}"
               flash.now[:warning] += "#{error}. "
             end
             return invalid_credentials
@@ -147,8 +147,8 @@ module RedmineOpenidConnect
     def invalid_credentials
       return super unless OicSession.enabled?
 
-      logger.warn "Échec de connexion pour '#{params[:username]}' depuis #{request.remote_ip} à #{Time.now.utc}"
-      flash.now[:error] = (l(:notice_account_invalid_creditentials) + ". " + "<a href='#{signout_path}'>Essayez avec un autre identifiant</a>").html_safe
+      logger.warn "Connection failed for '#{params[:username]}' from #{request.remote_ip} at #{Time.now.utc}"
+      flash.now[:error] = (l(:notice_account_invalid_creditentials) + ". " + "<a href='#{signout_path}'>Try with another username</a>").html_safe
     end
 
     def rpiframe
