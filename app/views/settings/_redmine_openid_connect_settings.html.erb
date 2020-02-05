@@ -44,3 +44,8 @@
   <label><%= t('config.disable_ssl_validation') %></label>
   <%= check_box_tag 'settings[disable_ssl_validation]', true, @settings['disable_ssl_validation'] %>
 </p>
+
+<p>
+  <label><%= t('config.override_user_attributes') %></label>
+  <%= check_box_tag 'settings[override_user_attributes]', true, @settings['override_user_attributes'] %>
+</p>

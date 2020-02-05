@@ -10,3 +10,4 @@ en:
     group: Authorized group (blank if all users are authorized)
     admin_group: Admins group (members of this group are treated as admin)
     dynamic_config_expiry: How often to retrieve openid configuration (default 1 day)
+    override_user_attributes: Override user attributes at each login
