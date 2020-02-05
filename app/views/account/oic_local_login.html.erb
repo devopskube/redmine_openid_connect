@@ -12,6 +12,6 @@
 
     url = wl.protocol + '//' + wl.hostname  + port + wl.pathname + '?' + wl.hash.substring(1);
     wl.replace(url);
-    document.write('<p>Click <a href="' + url + '">here</a> if the redirect does not work.</p>');
+    document.write('<p class="oic-click-for-redirect">Click <a href="' + url + '">here</a>, if redirection is not working.</p>');
   }
 <% end %>
