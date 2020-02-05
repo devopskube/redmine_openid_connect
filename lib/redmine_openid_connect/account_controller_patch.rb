@@ -101,8 +101,7 @@ module RedmineOpenidConnect
 
             return invalid_credentials
           end
-
-          user = User.new
+        end
 
         if (firstname.nil? || lastname.nil?) && user_info["name"]
           parts = user_info["name"].split
