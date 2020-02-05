@@ -193,10 +193,20 @@ module RedmineOpenidConnect
       groups.each do |group|
         begin
           rm_g = Group.find_by(:lastname => group.to_s.downcase)
-          logger.error("group found")
-          if not rm_g.user_ids.include? user.id
-            rm_g.users << user
-            logger.error("user added to group")
+          if rm_g
+            logger.error("group found")
+            if not rm_g.users.include?(user)
+              rm_g.users << user
+              logger.error("user added to group")
+            end
+          else
+            logger.error("no group " + group)
+            g = Group.new()
+            g.name = group
+            g.user_ids = [user.id]
+            if g.save()
+              logger.error("group added")
+            end
           end
         rescue ActiveRecord::RecordNotFound
           logger.error("no group " + group)
