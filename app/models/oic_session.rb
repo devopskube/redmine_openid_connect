@@ -137,13 +137,13 @@ class OicSession < ActiveRecord::Base
 
     return true if check_keycloak_role client_config['group']
 
-    return false if !user["member_of"]
+    return false if !user["member_of"] && !user["roles"]
 
     return true if self.admin?
 
-    if client_config['group'].present? &&
-       user["member_of"].include?(client_config['group'])
-      return true
+    if client_config['group'].present?
+       return true if user["member_of"].present? && user["member_of"].include?(client_config['group'])
+       return true if user["roles"].present? && user["roles"].include?(client_config['group']) || user["roles"].include?(client_config['admin_group']) 
     end
 
     return false
@@ -153,6 +153,9 @@ class OicSession < ActiveRecord::Base
     if client_config['admin_group'].present?
       if user["member_of"].present?
         return true if user["member_of"].include?(client_config['admin_group'])
+      end
+      if user["roles"].present? 
+        return true if user["roles"].include?(client_config['admin_group'])
       end
       # keycloak way...
       return true if check_keycloak_role client_config['admin_group']
