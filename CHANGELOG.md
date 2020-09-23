@@ -1,5 +1,11 @@
 # Changelog
 
+## ??? 0.9.5
+* Pull server-side errors from locale files
+* Log-messages/some less prominent errors hard-coded in English again 
+* Do not render `rpiframe`, if OpenID config does not contain a `check_session_iframe`
+* Some more documentation about setting up
+
 ## 0.9.4
 * Support Redmine 4
 * Upgrade deprecated calls

@@ -123,9 +123,9 @@ module RedmineOpenidConnect
             # after user creation just show "My Page" don't redirect to remember
             successful_authentication(user)
           else
-            flash.now[:warning] ||= "Ne peut créer l'utilisateur #{user.login}: "
+            flash.now[:warning] ||= l(:oic_cannot_create_user, user.login)
             user.errors.full_messages.each do |error|
-              logger.warn "Ne peut créer l'utilisateur #{user.login}, erreur #{error}"
+              logger.warn "Could not create user #{user.login}, error was #{error}"
               flash.now[:warning] += "#{error}. "
             end
             return invalid_credentials
@@ -147,8 +147,8 @@ module RedmineOpenidConnect
     def invalid_credentials
       return super unless OicSession.enabled?
 
-      logger.warn "Échec de connexion pour '#{params[:username]}' depuis #{request.remote_ip} à #{Time.now.utc}"
-      flash.now[:error] = (l(:notice_account_invalid_creditentials) + ". " + "<a href='#{signout_path}'>Essayez avec un autre identifiant</a>").html_safe
+      logger.warn "Failed login attempt for '#{params[:username]}' from #{request.remote_ip} at #{Time.now.utc}"
+      flash.now[:error] = (l(:notice_account_invalid_credentials) + " " + l(:oic_try_another_account, signout_path)).html_safe
     end
 
     def rpiframe
