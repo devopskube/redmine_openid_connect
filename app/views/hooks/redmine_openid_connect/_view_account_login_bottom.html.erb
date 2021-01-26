@@ -1,0 +1,7 @@
+<div id="login-form-openid">
+  <%= form_tag(oic_login_url, :method => :get) do %>
+  <%= back_url_hidden_field_tag %>
+
+  <input type="submit" name="login-openid" value="<%=l(:button_login_sso)%>" tabindex="5" id="login-submit-openid" />
+  <% end %>
+</div>

@@ -28,6 +28,10 @@ class OicSession < ActiveRecord::Base
     !self.enabled?
   end
 
+  def self.login_selector?
+    client_config['login_selector']
+  end
+
   def self.openid_configuration_url
     client_config['openid_connect_server_url'] + '/.well-known/openid-configuration'
   end
