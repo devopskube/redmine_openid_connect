@@ -32,6 +32,10 @@ class OicSession < ActiveRecord::Base
     client_config['login_selector']
   end
 
+  def self.create_user_if_not_exists?
+    client_config['create_user_if_not_exists']
+  end
+
   def self.openid_configuration_url
     client_config['openid_connect_server_url'] + '/.well-known/openid-configuration'
   end

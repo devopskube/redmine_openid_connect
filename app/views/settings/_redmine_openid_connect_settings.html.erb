@@ -49,3 +49,8 @@
   <label><%= t('config.login_selector') %></label>
     <%= check_box_tag 'settings[login_selector]', false, @settings['login_selector'] %>
 </p>
+
+<p>
+  <label><%= t('config.create_user_if_not_exists') %></label>
+    <%= check_box_tag 'settings[create_user_if_not_exists]', true, @settings['create_user_if_not_exists'] %>
+</p>

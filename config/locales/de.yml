@@ -10,6 +10,7 @@ de:
     group: Rolle "darf einloggen" (leer lassen, falls jeder authentifizierte User einloggen darf)
     admin_group: Rolle "Administratoren" (User mit dieser Rolle werden als Administrator behandelt)
     dynamic_config_expiry: "Intervall für Aktualisierung der OpenID-Einstellungen (Default: 1 day)"
+    create_user_if_not_exists: "Benutzer erstellen, falls nicht vorhanden"
   oic_logout_success: 'Sie wurden ausgeloggt. <a href="%{value}">Klicken Sie hier, um sich erneut einzuloggen</a>.'
   oic_cannot_create_user: "Der Benutzer %{value} konnte nicht angelegt werden: "
   oic_try_another_account: "<a href='%{value}'>Mit einem anderen Account einloggen.</a>"

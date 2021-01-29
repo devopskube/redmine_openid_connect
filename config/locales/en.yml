@@ -11,6 +11,7 @@ en:
     group: Authorized group (blank if all users are authorized)
     admin_group: Admins group (members of this group are treated as admin)
     dynamic_config_expiry: How often to retrieve openid configuration (default 1 day)
+    create_user_if_not_exists: Create user if not exists
   oic_logout_success: 'You have been logged out. <a href="%{value}">Click here to log in again</a>.'
   oic_cannot_create_user: "Could no create the user %{value}: "
   oic_try_another_account: "<a href='%{value}'>Try logging in with another account</a>"

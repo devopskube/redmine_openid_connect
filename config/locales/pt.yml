@@ -11,6 +11,7 @@ pt:
     group: "Grupo autorizado (vazio se todos os utilizadores são autorizados)"
     admin_group: "Grupo de Administradores (membros deste grupo são tratados como administradores)"
     dynamic_config_expiry: "Com que frequência obter configuração do openid (padrão 1 dia)"
+    create_user_if_not_exists: "Criar utilizador caso não exista"
   oic_logout_success: 'Saiu com sucesso. <a href="%{value}">Clique aqui para voltar a entrar</a>.'
   oic_cannot_create_user: "Não foi possível criar o utilizador %{value}: "
   oic_try_another_account: "<a href='%{value}'>Tente entrar com uma conta diferente</a>"
