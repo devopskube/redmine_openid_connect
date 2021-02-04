@@ -1,0 +1,14 @@
+#login-form-openid {
+    margin: 1em auto 2em auto;
+    padding: 20px;
+    width: 340px;
+    border: 1px solid #FDBF3B;
+    background-color: #FFEBC1;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+#login-form-openid input[type=submit] {
+    display: block;
+    width: 100%;
+}

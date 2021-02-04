@@ -44,3 +44,8 @@
   <label><%= t('config.disable_ssl_validation') %></label>
   <%= check_box_tag 'settings[disable_ssl_validation]', true, @settings['disable_ssl_validation'] %>
 </p>
+
+<p>
+  <label><%= t('config.login_selector') %></label>
+    <%= check_box_tag 'settings[login_selector]', false, @settings['login_selector'] %>
+</p>

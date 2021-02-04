@@ -1,0 +1,17 @@
+# Portuguese strings go here for Rails i18n
+pt:
+  config:
+    enabled: Ativado
+    login_selector: Seletor de login
+    header: "Configuração OpenID Connect"
+    client_id: Client ID
+    openid_connect_server_url: Url do servidor OpenID Connect
+    scopes: OpenID Connect scopes (separados por virgula)
+    client_secret: Client Secret
+    group: "Grupo autorizado (vazio se todos os utilizadores são autorizados)"
+    admin_group: "Grupo de Administradores (membros deste grupo são tratados como administradores)"
+    dynamic_config_expiry: "Com que frequência obter configuração do openid (padrão 1 dia)"
+  oic_logout_success: 'Saiu com sucesso. <a href="%{value}">Clique aqui para voltar a entrar</a>.'
+  oic_cannot_create_user: "Não foi possível criar o utilizador %{value}: "
+  oic_try_another_account: "<a href='%{value}'>Tente entrar com uma conta diferente</a>"
+  button_login_sso: Entrar com SSO

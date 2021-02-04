@@ -2,6 +2,7 @@
 en:
   config:
     enabled: Enabled
+    login_selector: Login Selector
     header: OpenID Connect Configuration
     client_id: Client ID
     openid_connect_server_url: OpenID Connect server url
@@ -13,3 +14,4 @@ en:
   oic_logout_success: 'You have been logged out. <a href="%{value}">Click here to log in again</a>.'
   oic_cannot_create_user: "Could no create the user %{value}: "
   oic_try_another_account: "<a href='%{value}'>Try logging in with another account</a>"
+  button_login_sso: Login with SSO
