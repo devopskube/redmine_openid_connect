@@ -2,7 +2,7 @@ module RedmineOpenidConnect
   module AccountControllerPatch
 
     def login
-      if OicSession.disabled? || params[:local_login].present? || request.post?
+      if OicSession.disabled? || OicSession.login_selector? || params[:local_login].present? || request.post?
         return super
       end
 

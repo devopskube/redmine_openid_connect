@@ -46,6 +46,6 @@
 </p>
 
 <p>
-  <label><%= t('config.override_user_attributes') %></label>
-  <%= check_box_tag 'settings[override_user_attributes]', true, @settings['override_user_attributes'] %>
+  <label><%= t('config.login_selector') %></label>
+    <%= check_box_tag 'settings[login_selector]', false, @settings['login_selector'] %>
 </p>

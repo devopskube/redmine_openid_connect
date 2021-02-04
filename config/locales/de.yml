@@ -1,6 +1,7 @@
 de:
   config:
     enabled: Aktiv
+    login_selector: Login-Auswahl
     header: OpenID Connect Konfiguration
     client_id: Client-ID
     openid_connect_server_url: OpenID Connect Server-Url
@@ -12,3 +13,4 @@ de:
   oic_logout_success: 'Sie wurden ausgeloggt. <a href="%{value}">Klicken Sie hier, um sich erneut einzuloggen</a>.'
   oic_cannot_create_user: "Der Benutzer %{value} konnte nicht angelegt werden: "
   oic_try_another_account: "<a href='%{value}'>Mit einem anderen Account einloggen.</a>"
+  button_login_sso: Melden Sie sich mit SSO an
