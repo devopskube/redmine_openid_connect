@@ -54,3 +54,8 @@
   <label><%= t('config.create_user_if_not_exists') %></label>
     <%= check_box_tag 'settings[create_user_if_not_exists]', true, @settings['create_user_if_not_exists'] %>
 </p>
+
+<p>
+  <label><%= t('config.disallowed_auth_sources_login') %></label>
+  <%= select_tag 'settings[disallowed_auth_sources_login]', options_for_select(AuthSource.all.map { |a| [a.name, a.id] }, OicSession.disallowed_auth_sources_login), :multiple => true, :include_blank => true, :size => 5 %>
+</p>

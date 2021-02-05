@@ -153,6 +153,16 @@ module RedmineOpenidConnect
       end
     end
 
+    def password_authentication
+      user = User.find_by_login(params[:username])
+      if !user.auth_source.nil? and OicSession.disallowed_auth_sources_login.map(&:to_i).include? user.auth_source.id
+        flash.now[:warning] ||= l(:oic_cannot_login_user, params[:username])
+        logger.warn "User #{params[:username]} cannot login because it was disallowed by the openid plugin configuration"
+      else
+        return super
+      end
+    end
+
     def invalid_credentials
       return super unless OicSession.enabled?
 
