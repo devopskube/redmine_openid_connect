@@ -91,6 +91,15 @@ module RedmineOpenidConnect
         user = User.find_by_mail(user_info["email"])
 
         if user.nil?
+          if !OicSession.create_user_if_not_exists?
+            flash.now[:warning] ||= l(:oic_cannot_create_user, user_info["email"])
+            
+            logger.warn "Could not create user #{user_info["email"]}, the system is not allowed to create new users through openid"
+            flash.now[:warning] += "The system is not allowed to create new users through openid"
+
+            return invalid_credentials
+          end
+
           user = User.new
 
           user.login = user_info["user_name"] || user_info["nickname"] || user_info["preferred_username"]
@@ -141,6 +150,16 @@ module RedmineOpenidConnect
           end
           successful_authentication(user)
         end # if user.nil?
+      end
+    end
+
+    def password_authentication
+      user = User.find_by_login(params[:username])
+      if OicSession.enabled? and !user.nil? and !user.auth_source.nil? and OicSession.disallowed_auth_sources_login.map(&:to_i).include? user.auth_source.id
+        flash.now[:warning] ||= l(:oic_cannot_login_user, params[:username])
+        logger.warn "User #{params[:username]} cannot login because it was disallowed by the openid plugin configuration"
+      else
+        return super
       end
     end
 
