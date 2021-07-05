@@ -1,6 +1,7 @@
 require 'redmine'
 require 'redmine_openid_connect/application_controller_patch'
 require 'redmine_openid_connect/account_controller_patch'
+require 'redmine_openid_connect/users_controller_patch'
 require 'redmine_openid_connect/hooks'
 
 Redmine::Plugin.register :redmine_openid_connect do
@@ -17,4 +18,5 @@ end
 Rails.configuration.to_prepare do
   ApplicationController.prepend(RedmineOpenidConnect::ApplicationControllerPatch)
   AccountController.prepend(RedmineOpenidConnect::AccountControllerPatch)
+  UsersController.prepend(RedmineOpenidConnect::UsersControllerPatch)
 end
