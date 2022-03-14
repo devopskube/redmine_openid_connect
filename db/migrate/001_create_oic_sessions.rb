@@ -1,7 +1,8 @@
 class CreateOicSessions < ActiveRecord::Migration[4.2]
   def self.up
     create_table :oic_sessions do |t|
-      t.references :user, foreign_key: true
+      t.references :user, foreign_key: { on_delete: :cascade }
+
       t.text :code
       t.string :state
       t.string :nonce
