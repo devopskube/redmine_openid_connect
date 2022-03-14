@@ -254,7 +254,7 @@ class OicSession < ActiveRecord::Base
   end
 
   def scopes
-    if client_config["scopes"].nil? 
+    if client_config["scopes"].blank?
       return "openid profile email user_name"
     else
       client_config["scopes"].split(',').each(&:strip).join(' ')
