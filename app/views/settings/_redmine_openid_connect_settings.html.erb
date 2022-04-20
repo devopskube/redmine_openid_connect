@@ -77,19 +77,19 @@
   <legend>Extra options</legend>
 
   <p>
-    <label><%= t('config.enable_global_logout') %></label>
-    <%= check_box_tag 'settings[enable_global_logout]', true, @settings['enable_global_logout'] %>
+    <label>Disable global logout?</label>
+    <%= check_box_tag 'settings[disable_global_logout]', true, @settings['disable_global_logout'] %>
     <small>Logout from Redmine when logged out from other EEA services</small>
   </p>
 
   <p>
-    <label><%= t('config.disable_ssl_validation') %></label>
+    <label>Disable SSL validation?</label>
     <%= check_box_tag 'settings[disable_ssl_validation]', true, @settings['disable_ssl_validation'] %>
     <small>Do not validate the server SSL certificate</small>
   </p>
 
   <p>
-    <label><%= t('config.login_selector') %></label>
+    <label>Use a login selector?</label>
     <%= check_box_tag 'settings[login_selector]', false, @settings['login_selector'] %>
     <small>Allow the users to select if they login with their Redmine account or using OpenID</small>
   </p>

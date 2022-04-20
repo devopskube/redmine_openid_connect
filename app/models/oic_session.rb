@@ -254,7 +254,7 @@ class OicSession < ActiveRecord::Base
   end
 
   def enable_global_logout?
-    client_config['enable_global_logout'].present?
+    client_config['disable_global_logout'].blank?
   end
 
   def scopes
