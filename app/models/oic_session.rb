@@ -253,6 +253,10 @@ class OicSession < ActiveRecord::Base
     self.access_token.present?
   end
 
+  def enable_global_logout?
+    client_config['enable_global_logout'].present?
+  end
+
   def scopes
     if client_config["scopes"].blank?
       return "openid profile email user_name"

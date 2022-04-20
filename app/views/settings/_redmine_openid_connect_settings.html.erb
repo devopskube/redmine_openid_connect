@@ -1,61 +1,97 @@
-<h3><%= t('config.header') %></h3>
-
 <p>
-  <label><%= t('config.enabled') %></label>
+  <label>Enable</label>
   <%= check_box_tag 'settings[enabled]', false, @settings['enabled'] %>
 </p>
 
-<p>
-  <label><%= t('config.client_id') %></label>
-  <%= text_field_tag 'settings[client_id]', @settings['client_id'] %>
-</p>
+<fieldset>
+  <legend>OpenID Client settings</legend>
 
-<p>
-  <label><%= t('config.openid_connect_server_url') %></label>
-  <%= text_field_tag 'settings[openid_connect_server_url]', @settings['openid_connect_server_url'], :size => '60' %>
-</p>
+  <p>
+    <label>OpenID server URL</label>
+    <%= text_field_tag 'settings[openid_connect_server_url]', @settings['openid_connect_server_url'], :size => '60' %>
+    <br />
+    <small>Should not contain the <code>/.well-known/openid-configuration</code> suffix</small>
+  </p>
 
-<p>
-  <label><%= t('config.client_secret') %></label>
-  <%= password_field_tag 'settings[client_secret]', @settings['client_secret'], :size => '60' %>
-</p>
+  <p>
+    <label>Configuration cache interval</label>
+    <%= text_field_tag 'settings[dynamic_config_expiry]', @settings['dynamic_config_expiry'], placeholder: 86400 %>
+    <br />
+    <small>Defaults to <code>86400</code> (one day)</small>
+  </p>
 
-<p>
-  <label><%= t('config.scopes') %></label>
-  <%= text_field_tag 'settings[scopes]', @settings['scopes'], :size => '60' %>
-</p>
+  <p>
+    <label>OpenID scopes</label>
+    <%= text_field_tag 'settings[scopes]', @settings['scopes'], :size => '60', placeholder: "openid profile email user_name" %>
+    <br />
+    <small>Default scopes are <code>openid profile email user_name</code> if the field is blank</small>
+  </p>
 
-<p>
-  <label><%= t('config.group') %></label>
-  <%= text_field_tag 'settings[group]', @settings['group'] %>
-</p>
+  <p>
+    <label>Client ID</label>
+    <%= text_field_tag 'settings[client_id]', @settings['client_id'], size: '60' %>
+  </p>
 
-<p>
-  <label><%= t('config.admin_group') %></label>
-  <%= text_field_tag 'settings[admin_group]', @settings['admin_group'] %>
-</p>
+  <p>
+    <label>Client secret</label>
+    <%= password_field_tag 'settings[client_secret]', @settings['client_secret'], :size => '60' %>
+  </p>
 
-<p>
-  <label><%= t('config.dynamic_config_expiry') %></label>
-  <%= text_field_tag 'settings[dynamic_config_expiry]', @settings['dynamic_config_expiry'] %>
-</p>
+</fieldset>
 
-<p>
-  <label><%= t('config.disable_ssl_validation') %></label>
-  <%= check_box_tag 'settings[disable_ssl_validation]', true, @settings['disable_ssl_validation'] %>
-</p>
 
-<p>
-  <label><%= t('config.login_selector') %></label>
-    <%= check_box_tag 'settings[login_selector]', false, @settings['login_selector'] %>
-</p>
+<fieldset>
+  <legend>User-specific settings</legend>
 
-<p>
-  <label><%= t('config.create_user_if_not_exists') %></label>
+  <p>
+    <label>Authorized group</label>
+    <%= text_field_tag 'settings[group]', @settings['group'] %>
+    <br />
+    <small>Allows only members of this group to login. Leave blank to allow all users</small>
+  </p>
+
+  <p>
+    <label>Admin group</label>
+    <%= text_field_tag 'settings[admin_group]', @settings['admin_group'] %>
+    <br />
+    <small>Members of this group are treated as admins</small>
+  </p>
+
+  <p>
+    <label>SSO-only authentication sources</label>
+    <%= select_tag 'settings[disallowed_auth_sources_login]', options_for_select(AuthSource.all.map { |a| [a.name, a.id] }, OicSession.disallowed_auth_sources_login), :multiple => true, :include_blank => true, :size => 5 %>
+    <br />
+    <small>Select the LDAP sources that should be required to login via OpenID</small>
+  </p>
+
+  <p>
+    <label>Create users?</label>
     <%= check_box_tag 'settings[create_user_if_not_exists]', true, @settings['create_user_if_not_exists'] %>
-</p>
+    <small>Automatically create a Redmine user after a successful login</small>
+  </p>
 
-<p>
-  <label><%= t('config.disallowed_auth_sources_login') %></label>
-  <%= select_tag 'settings[disallowed_auth_sources_login]', options_for_select(AuthSource.all.map { |a| [a.name, a.id] }, OicSession.disallowed_auth_sources_login), :multiple => true, :include_blank => true, :size => 5 %>
-</p>
+
+</fieldset>
+
+<fieldset>
+  <legend>Extra options</legend>
+
+  <p>
+    <label><%= t('config.enable_global_logout') %></label>
+    <%= check_box_tag 'settings[enable_global_logout]', true, @settings['enable_global_logout'] %>
+    <small>Logout from Redmine when logged out from other EEA services</small>
+  </p>
+
+  <p>
+    <label><%= t('config.disable_ssl_validation') %></label>
+    <%= check_box_tag 'settings[disable_ssl_validation]', true, @settings['disable_ssl_validation'] %>
+    <small>Do not validate the server SSL certificate</small>
+  </p>
+
+  <p>
+    <label><%= t('config.login_selector') %></label>
+    <%= check_box_tag 'settings[login_selector]', false, @settings['login_selector'] %>
+    <small>Allow the users to select if they login with their Redmine account or using OpenID</small>
+  </p>
+
+</fieldset>

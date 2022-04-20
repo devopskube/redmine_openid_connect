@@ -1,0 +1,50 @@
+# As opposed to most guides out there for writing docker-compose files, which
+# are aiming towards a production-ready container, this one is aimed towards
+# developers working with Docker as a way to normalize their environment.
+#
+# The development flow would look like this:
+#
+#     # Setup the database, if needed:
+#     $ docker-compose run --rm db
+#
+#     # Install the gems:
+#     $ docker-compose run --rm runner bundle install
+#
+#     # Start the application:
+#     $ docker-compose up app
+#
+#     # Open the Rails console:
+#     $ docker-compose run --rm runner bin/rails c
+#
+#     # Run tests:
+#     $ docker-compose run --rm runner bin/rspec
+#
+# More information about this approach:
+# https://evilmartians.com/chronicles/ruby-on-whales-docker-for-ruby-rails-development
+version: '3.9'
+
+services:
+  # The application service.
+  #
+  # In order to start the application, run `docker-compose up app` (or set up
+  # a shorter alias for that command).
+  app:
+    image: redmine:4.2.5
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      REDMINE_DB_MYSQL: db
+      REDMINE_DB_PASSWORD: password
+      REDMINE_SECRET_KEY_BASE: verysecretkey
+    depends_on:
+      - db
+    volumes:
+      - .:/usr/src/redmine/plugins/redmine_openid_connect
+
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: redmine
