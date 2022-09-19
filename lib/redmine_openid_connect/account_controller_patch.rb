@@ -25,6 +25,7 @@ module RedmineOpenidConnect
     
     # performs redirect to SSO server
     def oic_login
+      Rails.logger.info "EXEVUTING ic_login"
       if session[:oic_session_id].blank?
         oic_session = OicSession.create
         session[:oic_session_id] = oic_session.id
@@ -68,7 +69,7 @@ module RedmineOpenidConnect
           return redirect_to oic_local_logout
         end
 
-        oic_session.update_attributes!(authorize_params)
+        oic_session.update!(authorize_params)
 
         # verify id token nonce or reauthorize
         if oic_session.id_token.present?
@@ -92,7 +93,7 @@ module RedmineOpenidConnect
 
         if user.nil?
           if !OicSession.create_user_if_not_exists?
-            flash.now[:warning] ||= l(:oic_cannot_create_user, user_info["email"])
+            flash.now[:warning] ||= l(:oic_cannot_create_user, value: user_info["email"])
             
             logger.warn "Could not create user #{user_info["email"]}, the system is not allowed to create new users through openid"
             flash.now[:warning] += "The system is not allowed to create new users through openid"
@@ -132,7 +133,7 @@ module RedmineOpenidConnect
             # after user creation just show "My Page" don't redirect to remember
             successful_authentication(user)
           else
-            flash.now[:warning] ||= l(:oic_cannot_create_user, user.login)
+            flash.now[:warning] ||= l(:oic_cannot_create_user, value:user.login)
             user.errors.full_messages.each do |error|
               logger.warn "Could not create user #{user.login}, error was #{error}"
               flash.now[:warning] += "#{error}. "

@@ -1,7 +1,7 @@
 require 'redmine'
-require 'redmine_openid_connect/application_controller_patch'
-require 'redmine_openid_connect/account_controller_patch'
-require 'redmine_openid_connect/hooks'
+require_relative 'lib/redmine_openid_connect/application_controller_patch'
+require_relative 'lib/redmine_openid_connect/account_controller_patch'
+require_relative 'lib/redmine_openid_connect/hooks'
 
 Redmine::Plugin.register :redmine_openid_connect do
   name 'Redmine Openid Connect plugin'
@@ -14,7 +14,7 @@ Redmine::Plugin.register :redmine_openid_connect do
   settings :default => { 'empty' => true }, partial: 'settings/redmine_openid_connect_settings'
 end
 
-Rails.configuration.to_prepare do
-  ApplicationController.prepend(RedmineOpenidConnect::ApplicationControllerPatch)
-  AccountController.prepend(RedmineOpenidConnect::AccountControllerPatch)
-end
+
+ApplicationController.prepend(RedmineOpenidConnect::ApplicationControllerPatch)
+AccountController.prepend(RedmineOpenidConnect::AccountControllerPatch)
+
