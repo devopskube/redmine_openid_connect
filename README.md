@@ -1,6 +1,6 @@
 # Redmine OpenID Connect Plugin #
 
-Based on the work from [intelimina](https://bitbucket.org/intelimina/redmine_openid_connect).
+Based on the work from [intelimina](https://bitbucket.org/intelimina/redmine_openid_connect) and [devopskube](https://github.com/devopskube).
 
 ## Introduction ##
 
