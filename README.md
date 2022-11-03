@@ -2,6 +2,8 @@
 
 Based on the work from [intelimina](https://bitbucket.org/intelimina/redmine_openid_connect).
 
+** NB:** This fork just fixes the code to support zeitwerk autoloader. Code cherry picked from [here](https://github.com/devopskube/redmine_openid_connect/compare/master...pariv:redmine_openid_connect:redmine5)
+
 ## Introduction ##
 
 This is a plugin based on the implementation of redmine_cas. 

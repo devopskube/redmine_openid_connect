@@ -1,7 +1,7 @@
 require_relative '../../app/models/oic_session'
 
 module RedmineOpenidConnect
-  class Hooks < Redmine::Hook::ViewListener
+  class ViewHooks < Redmine::Hook::ViewListener
     def request
       ActionDispatch::Request.new(ENV)
     end
@@ -37,6 +37,16 @@ module RedmineOpenidConnect
 
     def view_layouts_base_html_head(context={})
       stylesheet_link_tag(:redmine_openid_connect, :plugin => 'redmine_openid_connect')
+    end
+  end
+  module Hooks
+    class ModelHook < Redmine::Hook::Listener
+      def after_plugins_loaded(_context = {})
+        return if Rails.version < '6.0'
+
+        ApplicationController.prepend(RedmineOpenidConnect::ApplicationControllerPatch)
+        AccountController.prepend(RedmineOpenidConnect::AccountControllerPatch)
+      end
     end
   end
 end

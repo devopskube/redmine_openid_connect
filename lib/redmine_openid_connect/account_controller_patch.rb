@@ -68,7 +68,7 @@ module RedmineOpenidConnect
           return redirect_to oic_local_logout
         end
 
-        oic_session.update_attributes!(authorize_params)
+        oic_session.update!(authorize_params)
 
         # verify id token nonce or reauthorize
         if oic_session.id_token.present?
