@@ -152,7 +152,7 @@ class OicSession < ActiveRecord::Base
 
     if client_config['group'].present?
        return true if user["member_of"].present? && user["member_of"].include?(client_config['group'])
-       return true if user["roles"].present? && user["roles"].include?(client_config['group']) || user["roles"].present? && user["roles"].include?(client_config['admin_group']) 
+       return true if user["roles"].present? && user["roles"].include?(client_config['group']) || user["roles"].include?(client_config['admin_group'])
     end
 
     return false
