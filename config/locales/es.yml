@@ -1,0 +1,20 @@
+# English strings go here for Rails i18n
+en:
+  config:
+    enabled: Habilitado
+    login_selector: Seleccione login
+    header: Configuración de OpenID Connect
+    client_id: Client ID
+    openid_connect_server_url: OpenID Connect server url
+    scopes: OpenID Connect scopes (comma-separated)
+    client_secret: Client Secret
+    group: Authorized group (blanco para admitir todos lo usuarios)
+    admin_group: Admins group (Miembros de este grupo serán administradores en redmine)
+    dynamic_config_expiry: Frecuencia con la que se obtiene la configuración de OIDC (por defecto 1 día)
+    create_user_if_not_exists: ¿Crear el usuario si no existe?
+    disallowed_auth_sources_login: Los usuarios de los siguientes fuentes de logueo deberán usar SSO
+  oic_logout_success: 'Su sesión a finalizado. <a href="%{value}">Haga Click aquí para ingresar nuevamente</a>.'
+  oic_cannot_create_user: "No se ha podido crear el usuario %{value}: "
+  oic_try_another_account: "<a href='%{value}'>Intente iniciar sesión con otra cuenta</a>"
+  oic_cannot_login_user: "El usuario %{value} no pudo iniciar sesión: Utilice el acceso SSO"
+  button_login_sso: Acceder usando SSO
