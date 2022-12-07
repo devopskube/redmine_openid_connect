@@ -1,6 +1,6 @@
 # Redmine OpenID Connect Plugin #
 
-Based on the work from [intelimina](https://bitbucket.org/intelimina/redmine_openid_connect) and [devopskube](https://github.com/devopskube).
+Based on the work from [intelimina](https://bitbucket.org/intelimina/redmine_openid_connect).
 
 ## Introduction ##
 
@@ -45,6 +45,16 @@ Just include `username` in the scope being sent and replied to the client app.
    * **`family_name`**: `String` with the user's surname (required for user creation)
    * **`name`**: `String` with the user's full name (used as a fallback for first name and surname)
    * Should some of these fields be missing, try finding *Lambda* functions or *Generators* that allow you to customize the JWT Tokens issued
+
+### Configure Keycloak for administration privileges ###
+
+1. Within your client, in the roles tab, add a role, for instance `admin`. 
+2. From within Groups, create a group to define administrators. 
+3. Within the group, in role-mappings, select the client for your app, and add to the group the role you just created.
+4. When you add users to the group, they will automatically have the `admin` role. 
+5. Check the JWT Access Token generation. It should include the admin role:
+      * **`role`**: `admin` which will be found within the client, inside the group object. 
+
 
 ## In Case Your OpenID Provider Is Offline ##
 
