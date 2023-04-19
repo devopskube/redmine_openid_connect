@@ -15,8 +15,6 @@ Redmine::Plugin.register :redmine_openid_connect do
   settings :default => { 'empty' => true }, partial: 'settings/redmine_openid_connect_settings'
 end
 
-Rails.configuration.to_prepare do
-  ApplicationController.prepend(RedmineOpenidConnect::ApplicationControllerPatch)
-  AccountController.prepend(RedmineOpenidConnect::AccountControllerPatch)
-  UsersController.prepend(RedmineOpenidConnect::UsersControllerPatch)
-end
+ApplicationController.prepend(RedmineOpenidConnect::ApplicationControllerPatch)
+AccountController.prepend(RedmineOpenidConnect::AccountControllerPatch)
+UsersController.prepend(RedmineOpenidConnect::UsersControllerPatch)
