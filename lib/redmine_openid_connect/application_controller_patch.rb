@@ -1,15 +1,17 @@
 module RedmineOpenidConnect
   module ApplicationControllerPatch
     def require_login
-      return super unless (OicSession.enabled? && !OicSession.login_selector?)
-
-      if !User.current.logged?
+      if !User.current.logged? && OicSession.enabled? && OicSession.login_selector?
         if request.get?
           url = request.original_url
         else
           url = url_for(:controller => params[:controller], :action => params[:action], :id => params[:id], :project_id => params[:project_id])
         end
         session[:remember_url] = url
+      end
+      return super unless (OicSession.enabled? && !OicSession.login_selector?)
+
+      if !User.current.logged?
         redirect_to oic_login_url
         return false
       end
