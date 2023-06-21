@@ -25,6 +25,7 @@ module RedmineOpenidConnect
     
     # performs redirect to SSO server
     def oic_login
+      session[:remember_url] = back_url
       if session[:oic_session_id].blank?
         oic_session = OicSession.create
         session[:oic_session_id] = oic_session.id
