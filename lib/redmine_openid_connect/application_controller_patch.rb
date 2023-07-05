@@ -1,7 +1,7 @@
 module RedmineOpenidConnect
   module ApplicationControllerPatch
     def require_login
-      if !User.current.logged? && OicSession.enabled? && OicSession.login_selector?
+      if !User.current.logged? && OicSession.enabled?
         if request.get?
           url = request.original_url
         else
