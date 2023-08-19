@@ -159,6 +159,9 @@ class OicSession < ActiveRecord::Base
   end
 
   def admin?
+    if client_config['admin_group'].empty?
+      return nil
+    end
     if client_config['admin_group'].present?
       if user["member_of"].present?
         return true if user["member_of"].include?(client_config['admin_group'])
