@@ -1,0 +1,20 @@
+# French strings go here for Rails i18n
+fr:
+  config:
+    enabled: Activer l'authentification SSO
+    login_selector: Permettre l'authentification interne standard
+    header: Configuration OpenID Connect
+    client_id: Client ID
+    openid_connect_server_url: Url du serveur OpenID Connect
+    scopes: Scopes OpenID Connect (séparés par des virgules)
+    client_secret: Secret Client
+    group: Groupes autorisés (laisser vide si tous les utilisateurs sont autorisés)
+    admin_group: Groupe d'Admins (les membres de ce groupe seront Administrateurs Redmine)
+    dynamic_config_expiry: Fréquence de rafraichissement de la configuration OpenID (1 jour par défaut)
+    create_user_if_not_exists: Créer les utilisateurs s'ils n'existent pas
+    disallowed_auth_sources_login: Les utilisateurs de ces sources d'authentification devront se connecter avec SSO
+  oic_logout_success: 'Vous avez été déconnecté. <a href="%{value}">Cliquez ici pour vous connecter à nouveau</a>.'
+  oic_cannot_create_user: "Impossible de créer l'utilisateur %{value} : "
+  oic_try_another_account: "<a href='%{value}'>Essayez de vous connecter avec un autre compte</a>"
+  oic_cannot_login_user: "Echec de la connexion pour l'utilisateur %{value} : veuillez vous connecter via l'option SSO"
+  button_login_sso: Connexion avec SSO
