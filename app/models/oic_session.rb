@@ -139,12 +139,23 @@ class OicSession < ActiveRecord::Base
     return true if kc_is_in_role 
   end
 
+  def check_claim_roles(role)
+    role_is_in_claim = false
+    logger.info ">>>> user claims: #{ self.claims["roles"].to_json }"
+    if self.claims.present?
+      role_is_in_claim = self.claims["roles"].include?(role)
+    end
+
+    return true if role_is_in_claim
+  end
+
   def authorized?
     if client_config['group'].blank?
       return true
     end
 
     return true if check_keycloak_role client_config['group']
+    return true if check_claim_roles client_config['group']
 
     return false if !user["member_of"] && !user["roles"]
 
@@ -168,6 +179,9 @@ class OicSession < ActiveRecord::Base
       end
       # keycloak way...
       return true if check_keycloak_role client_config['admin_group']
+      
+      # Claim Roles way...
+      return true if check_claim_roles client_config['admin_group']
     end
     
     return false
