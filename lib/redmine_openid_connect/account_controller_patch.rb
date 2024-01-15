@@ -55,102 +55,97 @@ module RedmineOpenidConnect
     end
 
     def oic_local_login
-      if params[:code]
-        oic_session = OicSession.find(session[:oic_session_id])
+      return unless params[:code]
 
-        unless oic_session.present?
-          return invalid_credentials
-        end
+      oic_session = OicSession.find(session[:oic_session_id])
+      return invalid_credentials unless oic_session.present?
 
-        # verify request state or reauthorize
-        unless oic_session.state == params[:state]
-          flash[:error] = "Requête OpenID Connect invalide."
+      # verify request state or reauthorize
+      unless oic_session.state == params[:state]
+        flash[:error] = 'Invalid OpenID Connect request.'
+        return redirect_to oic_local_logout
+      end
+
+      oic_session.update!(authorize_params)
+
+      # verify id token nonce or reauthorize
+      if oic_session.id_token.present?
+        unless oic_session.claims['nonce'] == oic_session.nonce
+          flash[:error] = "Invalid ID Token."
           return redirect_to oic_local_logout
         end
+      end
 
-        oic_session.update!(authorize_params)
+      # get access token and user info
+      oic_session.get_access_token!
+      user_info = oic_session.get_user_info!
 
-        # verify id token nonce or reauthorize
-        if oic_session.id_token.present?
-          unless oic_session.claims['nonce'] == oic_session.nonce
-            flash[:error] = "ID Token invalide."
-            return redirect_to oic_local_logout
-          end
-        end
+      # verify application authorization
+      return invalid_credentials unless oic_session.authorized?
 
-        # get access token and user info
-        oic_session.get_access_token!
-        user_info = oic_session.get_user_info!
+      # Check if there's already an existing user
+      user = User.find_by_mail(user_info['email'])
 
-        # verify application authorization
-        unless oic_session.authorized?
+      if user.nil?
+        unless OicSession.create_user_if_not_exists?
+          flash.now[:warning] ||= l(:oic_cannot_create_user, value: user_info['email'])
+
+          logger.warn "Could not create user #{user_info['email']}, the system is not allowed to create new users through openid"
+          flash.now[:warning] += 'The system is not allowed to create new users through openid'
+
           return invalid_credentials
         end
 
-        # Check if there's already an existing user
-        user = User.find_by_mail(user_info["email"])
+        user = User.new
 
-        if user.nil?
-          if !OicSession.create_user_if_not_exists?
-            flash.now[:warning] ||= l(:oic_cannot_create_user, user_info["email"])
-            
-            logger.warn "Could not create user #{user_info["email"]}, the system is not allowed to create new users through openid"
-            flash.now[:warning] += "The system is not allowed to create new users through openid"
+        user.login = user_info["user_name"] || user_info["nickname"] || user_info["preferred_username"]
 
-            return invalid_credentials
+        firstname = user_info["given_name"]
+        lastname = user_info["family_name"]
+
+        if (firstname.nil? || lastname.nil?) && user_info["name"]
+          parts = user_info["name"].split
+          if parts.length >= 2
+            firstname = parts[0]
+            lastname = parts[-1]
           end
+        end
 
-          user = User.new
+        attributes = {
+          firstname: firstname || '',
+          lastname: lastname || '',
+          mail: user_info['email'],
+          mail_notification: 'only_my_events',
+          last_login_on: Time.now
+        }
 
-          user.login = user_info["user_name"] || user_info["nickname"] || user_info["preferred_username"]
+        user.assign_attributes attributes
 
-          firstname = user_info["given_name"]
-          lastname = user_info["family_name"]
-
-          if (firstname.nil? || lastname.nil?) && user_info["name"]
-            parts = user_info["name"].split
-            if parts.length >= 2
-              firstname = parts[0]
-              lastname = parts[-1]
-            end
-          end
-
-          attributes = {
-            firstname: firstname || "",
-            lastname: lastname || "",
-            mail: user_info["email"],
-            mail_notification: 'only_my_events',
-            last_login_on: Time.now
-          }
-
-          user.assign_attributes attributes
-
-          if user.save
-            user.update_attribute(:admin, oic_session.admin?)
-            oic_session.user_id = user.id
-            oic_session.save!
-            # after user creation just show "My Page" don't redirect to remember
-            successful_authentication(user)
-          else
-            flash.now[:warning] ||= l(:oic_cannot_create_user, user.login)
-            user.errors.full_messages.each do |error|
-              logger.warn "Could not create user #{user.login}, error was #{error}"
-              flash.now[:warning] += "#{error}. "
-            end
-            return invalid_credentials
-          end
-        else
+        if user.save
           user.update_attribute(:admin, oic_session.admin?)
           oic_session.user_id = user.id
           oic_session.save!
-          # redirect back to initial URL
-          if session[:remember_url]
-            params[:back_url] = session[:remember_url]
-            session[:remember_url] = nil
-          end
+          # after user creation just show "My Page" don't redirect to remember
           successful_authentication(user)
-        end # if user.nil?
-      end
+        else
+          flash.now[:warning] ||= l(:oic_cannot_create_user, value:user.login)
+          user.errors.full_messages.each do |error|
+            logger.warn "Could not create user #{user.login}, error was #{error}"
+            flash.now[:warning] += "#{error}. "
+          end
+          return invalid_credentials
+        end
+      else
+        user.update_attribute(:admin, oic_session.admin?)
+        oic_session.user_id = user.id
+        oic_session.save!
+        # redirect back to initial URL
+        if session[:remember_url]
+          params[:back_url] = session[:remember_url]
+          session[:remember_url] = nil
+        end
+        successful_authentication(user)
+      end # if user.nil?
     end
 
     def password_authentication
@@ -159,7 +154,7 @@ module RedmineOpenidConnect
         flash.now[:warning] ||= l(:oic_cannot_login_user, params[:username])
         logger.warn "User #{params[:username]} cannot login because it was disallowed by the openid plugin configuration"
       else
-        return super
+        super
       end
     end
 
@@ -177,20 +172,10 @@ module RedmineOpenidConnect
 
     def authorize_params
       # compatible with both rails 3 and 4
-      if params.respond_to?(:permit)
-        params.permit(
-          :code,
-          :id_token,
-          :session_state,
-        )
-      else
-        params.select do |k,v|
-          [
-            'code',
-            'id_token',
-            'session_state',
-          ].include?(k)
-        end
+      return params.permit(%i[code id_token session_state]) if params.respond_to?(:permit)
+
+      params.select do |k, _v|
+        %w[code id_token session_state].include?(k)
       end
     end
   end # AccountControllerPatch

@@ -13,7 +13,7 @@ class OicSession < ActiveRecord::Base
   end
 
   def self.host_name
-    Setting.protocol + "://" + Setting.host_name
+    "#{Setting.protocol}://#{Setting.host_name}"
   end
 
   def host_name
@@ -41,7 +41,7 @@ class OicSession < ActiveRecord::Base
   end
 
   def self.openid_configuration_url
-    client_config['openid_connect_server_url'] + '/.well-known/openid-configuration'
+    "#{client_config['openid_connect_server_url']}/.well-known/openid-configuration"
   end
 
   def self.get_dynamic_config
@@ -72,28 +72,28 @@ class OicSession < ActiveRecord::Base
     )
   end
 
+  def read_access_token(response)
+    return unless response['error'].blank?
+
+    self.access_token = response['access_token'] if response['access_token'].present?
+    self.refresh_token = response['refresh_token'] if response['refresh_token'].present?
+    self.id_token = response['id_token'] if response['id_token'].present?
+    self.expires_at = (DateTime.now + response['expires_in'].seconds) if response['expires_in'].present?
+    self.save!
+  end
+
+  private :read_access_token
+
   def get_access_token!
     response = self.class.get_token(access_token_query)
-    if response["error"].blank?
-      self.access_token = response["access_token"] if response["access_token"].present?
-      self.refresh_token = response["refresh_token"] if response["refresh_token"].present?
-      self.id_token = response["id_token"] if response["id_token"].present?
-      self.expires_at = (DateTime.now + response["expires_in"].seconds) if response["expires_in"].present?
-      self.save!
-    end
-    return response
+    read_access_token(response)
+    response
   end
 
   def refresh_access_token!
     response = self.class.get_token(refresh_token_query)
-    if response["error"].blank?
-      self.access_token = response["access_token"] if response["access_token"].present?
-      self.refresh_token = response["refresh_token"] if response["refresh_token"].present?
-      self.id_token = response["id_token"] if response["id_token"].present?
-      self.expires_at = (DateTime.now + response["expires_in"].seconds) if response["expires_in"].present?
-      self.save!
-    end
-    return response
+    read_access_token(response)
+    response
   end
 
   def self.parse_token(token)
@@ -105,7 +105,8 @@ class OicSession < ActiveRecord::Base
     if @claims.blank? || id_token_changed?
       @claims = self.class.parse_token(id_token)
     end
-    return @claims
+
+    @claims
   end
 
   def get_user_info!
@@ -114,29 +115,30 @@ class OicSession < ActiveRecord::Base
     HTTParty::Basement.default_options.update(verify: false) if client_config['disable_ssl_validation']
     response = HTTParty.get(
       uri,
-      headers: { "Authorization" => "Bearer #{access_token}" }
+      headers: { 'Authorization' => "Bearer #{access_token}" }
     )
 
-    if response.headers["content-type"] == 'application/jwt'
-      # signed / encrypted response, extract before using
-      return self.class.parse_token(response)
-    else
-      # unsigned response, just return the bare json
+    # signed / encrypted response, extract before using
+    return self.class.parse_token(response) if response.headers['content-type'] == 'application/jwt'
+
+    begin
+    # unsigned response, just return the bare json
       return JSON::parse(response.body)
-      decoded_token = response.body
+    rescue JSON::ParserError
+      nil
     end
   end
 
   def check_keycloak_role(role)
     # keycloak way...
     kc_is_in_role = false
-    if user["realm_access"].present?
-      kc_is_in_role = user["realm_access"]["roles"].include?(role)
+    kc_is_in_role = user['realm_access']['roles'].include?(role) if user['realm_access'].present?
+
+    if user['resource_access'].present? && user['resource_access'][client_config['client_id']].present?
+      kc_is_in_role = user['resource_access'][client_config['client_id']]['roles'].include?(role)
     end
-    if user["resource_access"].present? && user["resource_access"][client_config['client_id']].present?
-      kc_is_in_role = user["resource_access"][client_config['client_id']]["roles"].include?(role)
-    end
-    return true if kc_is_in_role 
+
+    true if kc_is_in_role
   end
 
   def authorized?
@@ -146,31 +148,31 @@ class OicSession < ActiveRecord::Base
 
     return true if check_keycloak_role client_config['group']
 
-    return false if !user["member_of"] && !user["roles"]
+    return false if !user['member_of'] && !user['roles']
 
     return true if self.admin?
 
     if client_config['group'].present?
-       return true if user["member_of"].present? && user["member_of"].include?(client_config['group'])
-       return true if user["roles"].present? && user["roles"].include?(client_config['group']) || user["roles"].present? && user["roles"].include?(client_config['admin_group']) 
+       return true if user['member_of'].present? && user['member_of'].include?(client_config['group'])
+       return true if user['roles'].present? && user['roles'].include?(client_config['group']) || user['roles'].include?(client_config['admin_group']) 
     end
 
-    return false
+    false
   end
 
   def admin?
     if client_config['admin_group'].present?
-      if user["member_of"].present?
-        return true if user["member_of"].include?(client_config['admin_group'])
+      if user['member_of'].present?
+        return true if user['member_of'].include?(client_config['admin_group'])
       end
-      if user["roles"].present? 
-        return true if user["roles"].include?(client_config['admin_group'])
+      if user['roles'].present? 
+        return true if user['roles'].include?(client_config['admin_group'])
       end
       # keycloak way...
       return true if check_keycloak_role client_config['admin_group']
     end
     
-    return false
+    false
   end
 
   def user
@@ -179,18 +181,19 @@ class OicSession < ActiveRecord::Base
     else
       @user = JSON::parse(Base64::decode64(id_token.split('.')[1]))
     end
-    return @user
+
+    @user
   end
 
   def authorization_url
     config = dynamic_config
-    config["authorization_endpoint"] + "?" + authorization_query.to_param
+    "#{config['authorization_endpoint']}?#{authorization_query.to_param}"
   end
 
   def end_session_url
     config = dynamic_config
-    return if config["end_session_endpoint"].nil?
-    config["end_session_endpoint"] + "?" + end_session_query.to_param
+    return if config['end_session_endpoint'].nil?
+    "#{config['end_session_endpoint']}?#{end_session_query.to_param}"
   end
 
   def randomize_state!
@@ -203,12 +206,12 @@ class OicSession < ActiveRecord::Base
 
   def authorization_query
     query = {
-      "response_type" => "code",
-      "state" => self.state,
-      "nonce" => self.nonce,
-      "scope" => scopes,
-      "redirect_uri" => "#{host_name}/oic/local_login",
-      "client_id" => client_config['client_id'],
+      'response_type' => 'code',
+      'state' => self.state,
+      'nonce' => self.nonce,
+      'scope' => scopes,
+      'redirect_uri' => "#{host_name}/oic/local_login",
+      'client_id' => client_config['client_id'],
     }
   end
 
@@ -238,7 +241,8 @@ class OicSession < ActiveRecord::Base
     if id_token.present? 
       query['id_token_hint'] = id_token
     end
-   return query
+
+    query
   end
 
   def expired?
@@ -254,11 +258,8 @@ class OicSession < ActiveRecord::Base
   end
 
   def scopes
-    if client_config["scopes"].nil? 
-      return "openid profile email user_name"
-    else
-      client_config["scopes"].split(',').each(&:strip).join(' ')
-    end
-  end
+    return 'openid profile email' if client_config['scopes'].blank?
 
+    client_config['scopes'].split(',').each(&:strip).join(' ')
+  end
 end
