@@ -126,7 +126,9 @@ module RedmineOpenidConnect
           user.assign_attributes attributes
 
           if user.save
-            user.update_attribute(:admin, oic_session.admin?)
+            unless oic_session.admin?.nil?
+              user.update_attribute(:admin, oic_session.admin?)
+            end
             oic_session.user_id = user.id
             oic_session.save!
             # after user creation just show "My Page" don't redirect to remember
@@ -141,6 +143,9 @@ module RedmineOpenidConnect
           end
         else
           user.update_attribute(:admin, oic_session.admin?)
+          unless oic_session.admin?.nil?
+            user.update_attribute(:admin, oic_session.admin?)
+          end
           oic_session.user_id = user.id
           oic_session.save!
           # redirect back to initial URL
