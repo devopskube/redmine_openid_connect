@@ -21,7 +21,7 @@
 
     window.addEventListener("message", receiveMessage, false);
     function receiveMessage(e) {
-      if (e.origin !== target_origin) { return alert('Wrong target origin: ' + target_origin); }
+      if (e.origin !== target_origin) { return console.error('Wrong target origin: ' + target_origin); }
       stat = e.data;
 
       if (stat == "changed") {
