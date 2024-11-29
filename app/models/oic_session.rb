@@ -174,12 +174,17 @@ class OicSession < ActiveRecord::Base
   end
 
   def user
-    token = access_token.present? ? JSON.parse(Base64.decode64(access_token.split('.')[1])) : {}
-    if token["member_of"].present?
-      @user = token
-    else
-      @user = JSON.parse(Base64.decode64(id_token.split('.')[1]))
+    # user info from access_token, the keycloak way...
+    if access_token?
+      token = JSON::parse(Base64::decode64(access_token.split('.')[1]))
+      if token["member_of"].present? || token["roles"].present?
+        @user = token
+        return @user
+      end
     end
+
+    # user info from id_token, the regular way...
+    @user = JSON.parse(Base64.decode64(id_token.split('.')[1]))
     return @user
   end
 
