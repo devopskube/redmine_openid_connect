@@ -157,7 +157,16 @@ class OicSession < ActiveRecord::Base
 
     return false
   end
-
+  
+ def decode_jwt_payload(payload_encoded)
+    # Add missing padding (JWT may omit padding)
+    remainder = payload_encoded.length % 4
+    if remainder > 0
+      payload_encoded += "=" * (4 - remainder)
+    end
+    Base64.urlsafe_decode64(payload_encoded).force_encoding("UTF-8")
+  end
+  
   def admin?
     if client_config['admin_group'].present?
       if user["member_of"].present?
@@ -174,11 +183,19 @@ class OicSession < ActiveRecord::Base
   end
 
   def user
-    if access_token? # keycloak way...
-      @user = JSON::parse(Base64::decode64(access_token.split('.')[1]))
-    else
-      @user = JSON::parse(Base64::decode64(id_token.split('.')[1]))
+    begin
+      payload_encoded = if access_token?
+                          access_token.split('.')[1]
+                        else
+                          id_token.split('.')[1]
+                        end
+      decoded_payload = Base64.decode64(payload_encoded).force_encoding("UTF-8")
+
+      @user = JSON.parse(decoded_payload)
+    rescue JSON::ParserError => e
+      raise e 
     end
+
     return @user
   end
 
