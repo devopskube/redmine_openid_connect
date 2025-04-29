@@ -134,7 +134,7 @@ class OicSession < ActiveRecord::Base
     if user["resource_access"].present? && user["resource_access"][client_config['client_id']].present?
       kc_is_in_role = user["resource_access"][client_config['client_id']]["roles"].include?(role)
     end
-    return true if kc_is_in_role 
+    return true if kc_is_in_role
   end
 
   def authorized?
@@ -150,7 +150,7 @@ class OicSession < ActiveRecord::Base
 
     if client_config['group'].present?
        return true if user["member_of"].present? && user["member_of"].include?(client_config['group'])
-       return true if user["roles"].present? && user["roles"].include?(client_config['group']) || user["roles"].include?(client_config['admin_group']) 
+       return true if user["roles"].present? && user["roles"].include?(client_config['group']) || user["roles"].include?(client_config['admin_group'])
     end
 
     return false
@@ -161,22 +161,28 @@ class OicSession < ActiveRecord::Base
       if user["member_of"].present?
         return true if user["member_of"].include?(client_config['admin_group'])
       end
-      if user["roles"].present? 
+      if user["roles"].present?
         return true if user["roles"].include?(client_config['admin_group'])
       end
       # keycloak way...
       return true if check_keycloak_role client_config['admin_group']
     end
-    
+
     return false
   end
 
   def user
-    if access_token? # keycloak way...
-      @user = JSON::parse(Base64::decode64(access_token.split('.')[1]))
-    else
-      @user = JSON::parse(Base64::decode64(id_token.split('.')[1]))
+    # user info from access_token, the keycloak way...
+    if access_token?
+      token = JSON::parse(Base64::decode64(access_token.split('.')[1]))
+      if token["member_of"].present? || token["roles"].present?
+        @user = token
+        return @user
+      end
     end
+
+    # user info from id_token, the regular way...
+    @user = JSON.parse(Base64.decode64(id_token.split('.')[1]))
     return @user
   end
 
@@ -233,7 +239,7 @@ class OicSession < ActiveRecord::Base
       'session_state' => session_state,
       'post_logout_redirect_uri' => "#{host_name}/oic/local_logout",
     }
-    if id_token.present? 
+    if id_token.present?
       query['id_token_hint'] = id_token
     end
    return query
