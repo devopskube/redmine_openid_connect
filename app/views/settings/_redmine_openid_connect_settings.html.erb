@@ -26,6 +26,11 @@
 </p>
 
 <p>
+  <label><%= t('config.dont_change_group') %></label>
+  <%= check_box_tag 'settings[dont_change_group]', true, @settings['dont_change_group'] %>
+</p>
+
+<p>
   <label><%= t('config.group') %></label>
   <%= text_field_tag 'settings[group]', @settings['group'] %>
 </p>
