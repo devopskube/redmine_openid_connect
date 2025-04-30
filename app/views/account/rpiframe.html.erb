@@ -21,6 +21,11 @@
 
     window.addEventListener("message", receiveMessage, false);
     function receiveMessage(e) {
+      // other scripts might use postMessage method, filter out events
+      // not originated from opiframe.
+      var opiframe = window.parent.document.getElementById("opiframe").contentWindow;
+      if (e.source !== opiframe) { return };
+
       if (e.origin !== target_origin) { return alert('Wrong target origin: ' + target_origin); }
       stat = e.data;
 
