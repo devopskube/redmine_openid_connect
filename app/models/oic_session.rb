@@ -137,6 +137,15 @@ class OicSession < ActiveRecord::Base
     return true if kc_is_in_role 
   end
 
+  def check_authelia_role(role)
+    #authelia way...
+    authelia_is_in_role = false
+    if user["groups"].present?
+      authelia_is_in_role = user["groups"].include?(role)
+    end
+    return true if authelia_is_in_role
+  end
+
   def authorized?
     if client_config['group'].blank?
       return true
@@ -144,13 +153,15 @@ class OicSession < ActiveRecord::Base
 
     return true if check_keycloak_role client_config['group']
 
+    return true if check_authelia_role client_config['group']
+
     return false if !user["member_of"] && !user["roles"]
 
     return true if self.admin?
 
     if client_config['group'].present?
        return true if user["member_of"].present? && user["member_of"].include?(client_config['group'])
-       return true if user["roles"].present? && user["roles"].include?(client_config['group']) || user["roles"].include?(client_config['admin_group']) 
+       return true if user["roles"].present? && user["roles"].include?(client_config['group']) || user["roles"].include?(client_config['admin_group'])
     end
 
     return false
@@ -166,13 +177,16 @@ class OicSession < ActiveRecord::Base
       end
       # keycloak way...
       return true if check_keycloak_role client_config['admin_group']
+
+      # authelia way...
+      return true if check_authelia_role client_config['admin_group']
     end
     
     return false
   end
 
   def user
-    if access_token? # keycloak way...
+    if (access_token? && access_token.exclude?('authelia')) # keycloak way...
       @user = JSON::parse(Base64::decode64(access_token.split('.')[1]))
     else
       @user = JSON::parse(Base64::decode64(id_token.split('.')[1]))
